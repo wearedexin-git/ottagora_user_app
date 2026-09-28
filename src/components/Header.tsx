@@ -6,10 +6,9 @@ export default function Header() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-lg font-bold tracking-widest text-transparent uppercase">
-                OTTAGORA
-              </span>
+            <Link href="/" className="flex items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo.svg" alt="Ottagora" className="h-6 sm:h-7 w-auto" />
             </Link>
           </div>
           

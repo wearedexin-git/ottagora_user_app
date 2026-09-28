@@ -2,20 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { 
-  Calendar, 
-  Briefcase, 
-  Award, 
-  FileText, 
-  ArrowRight, 
-  CheckCircle2, 
-  Clock, 
-  XCircle,
-  TrendingUp,
-  BookOpen,
-  MapPin,
-  Users
-} from "lucide-react";
+import {
+  IconCalendar as Calendar,
+  IconBriefcase as Briefcase,
+  IconAward as Award,
+  IconFileText as FileText,
+  IconArrowRight as ArrowRight,
+  IconClock as Clock,
+  IconXCircle as XCircle,
+  IconTrendingUp as TrendingUp,
+  IconBookOpen as BookOpen,
+  IconUsers as Users,
+} from "@/components/icons";
+import { Card, Button, Badge } from "@/components/ui";
 
 interface DashboardTabsProps {
   user: {
@@ -23,10 +22,10 @@ interface DashboardTabsProps {
     surname: string | null;
     email: string;
     role: string;
-    reservations: Array<{
+    tableReservations: Array<{
       id: string;
       date: Date | string;
-      timeSlot: string;
+      timeSlot: string | null;
       guests: number;
       event: {
         name: string;
@@ -40,10 +39,10 @@ interface DashboardTabsProps {
       status: string;
       createdAt: Date | string;
       course: {
-        name: string;
+        title: string;
         materials: Array<{
           id: string;
-          name: string;
+          title: string;
           url: string;
           type: string;
         }>;
@@ -65,12 +64,12 @@ interface DashboardTabsProps {
 export default function DashboardTabs({ user, workspaceBookings }: DashboardTabsProps) {
   const [activeTab, setActiveTab] = useState<"all" | "tables" | "workspace" | "courses">("all");
 
-  const tablesCount = user.reservations.length;
+  const tablesCount = user.tableReservations.length;
   const workspaceCount = workspaceBookings.length;
   const coursesCount = user.enrollments.length;
 
   // Calculate statistics
-  const upcomingTables = user.reservations.filter(r => new Date(r.date) >= new Date()).length;
+  const upcomingTables = user.tableReservations.filter(r => new Date(r.date) >= new Date()).length;
   const pendingWorkspace = workspaceBookings.filter(b => b.status === "PENDING").length;
   const approvedWorkspace = workspaceBookings.filter(b => b.status === "APPROVED").length;
   const acceptedCourses = user.enrollments.filter(e => e.status === "ACCEPTED").length;
@@ -80,17 +79,15 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
       {/* Visual Statistics Dashboard Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card 1: Tavoli */}
-        <div 
+        <Card
+          interactive
+          selected={activeTab === "tables"}
           onClick={() => setActiveTab("tables")}
-          className={`glass p-6 rounded-3xl border transition-all cursor-pointer group relative overflow-hidden ${
-            activeTab === "tables" 
-              ? "border-amber-500/50 bg-amber-500/5 shadow-md ring-1 ring-amber-500/20" 
-              : "border-zinc-200/50 bg-white/50 hover:bg-white hover:border-zinc-300/80 shadow-sm"
-          }`}
+          className="group relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full pointer-events-none transition-transform group-hover:scale-110 duration-500" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full pointer-events-none transition-transform group-hover:scale-110 duration-500" />
           <div className="flex justify-between items-start">
-            <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-600 transition-transform group-hover:scale-105 duration-300">
+            <div className="p-3 rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-105 duration-300">
               <Calendar className="h-6 w-6" />
             </div>
             <span className="text-3xl font-extrabold text-zinc-900 tracking-tight">{tablesCount}</span>
@@ -98,29 +95,27 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
           <div className="mt-4 space-y-1">
             <h3 className="text-sm font-bold text-zinc-800">Tavoli & Eventi</h3>
             <p className="text-xs text-zinc-400 font-medium">
-              {upcomingTables > 0 
-                ? `${upcomingTables} prenotazioni attive` 
+              {upcomingTables > 0
+                ? `${upcomingTables} prenotazioni attive`
                 : "Nessuna prenotazione attiva"}
             </p>
           </div>
-          <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
+          <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-primary group-hover:brightness-90">
             <span>Gestisci prenotazioni</span>
             <ArrowRight className="h-3 w-3 transform group-hover:translate-x-1 transition-transform" />
           </div>
-        </div>
+        </Card>
 
         {/* Card 2: Workspace */}
-        <div 
+        <Card
+          interactive
+          selected={activeTab === "workspace"}
           onClick={() => setActiveTab("workspace")}
-          className={`glass p-6 rounded-3xl border transition-all cursor-pointer group relative overflow-hidden ${
-            activeTab === "workspace" 
-              ? "border-amber-500/50 bg-amber-500/5 shadow-md ring-1 ring-amber-500/20" 
-              : "border-zinc-200/50 bg-white/50 hover:bg-white hover:border-zinc-300/80 shadow-sm"
-          }`}
+          className="group relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-orange-500/10 to-transparent rounded-bl-full pointer-events-none transition-transform group-hover:scale-110 duration-500" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full pointer-events-none transition-transform group-hover:scale-110 duration-500" />
           <div className="flex justify-between items-start">
-            <div className="p-3 rounded-2xl bg-orange-500/10 text-orange-600 transition-transform group-hover:scale-105 duration-300">
+            <div className="p-3 rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-105 duration-300">
               <Briefcase className="h-6 w-6" />
             </div>
             <span className="text-3xl font-extrabold text-zinc-900 tracking-tight">{workspaceCount}</span>
@@ -128,29 +123,27 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
           <div className="mt-4 space-y-1">
             <h3 className="text-sm font-bold text-zinc-800">Aule & Workspace</h3>
             <p className="text-xs text-zinc-400 font-medium">
-              {pendingWorkspace > 0 
+              {pendingWorkspace > 0
                 ? `${pendingWorkspace} in attesa, ${approvedWorkspace} approvate`
                 : `${approvedWorkspace} prenotazioni approvate`}
             </p>
           </div>
-          <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
+          <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-primary group-hover:brightness-90">
             <span>Dettagli sale e aule</span>
             <ArrowRight className="h-3 w-3 transform group-hover:translate-x-1 transition-transform" />
           </div>
-        </div>
+        </Card>
 
         {/* Card 3: Corsi */}
-        <div 
+        <Card
+          interactive
+          selected={activeTab === "courses"}
           onClick={() => setActiveTab("courses")}
-          className={`glass p-6 rounded-3xl border transition-all cursor-pointer group relative overflow-hidden ${
-            activeTab === "courses" 
-              ? "border-amber-500/50 bg-amber-500/5 shadow-md ring-1 ring-amber-500/20" 
-              : "border-zinc-200/50 bg-white/50 hover:bg-white hover:border-zinc-300/80 shadow-sm"
-          }`}
+          className="group relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-600/10 to-transparent rounded-bl-full pointer-events-none transition-transform group-hover:scale-110 duration-500" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full pointer-events-none transition-transform group-hover:scale-110 duration-500" />
           <div className="flex justify-between items-start">
-            <div className="p-3 rounded-2xl bg-amber-600/10 text-amber-700 transition-transform group-hover:scale-105 duration-300">
+            <div className="p-3 rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-105 duration-300">
               <Award className="h-6 w-6" />
             </div>
             <span className="text-3xl font-extrabold text-zinc-900 tracking-tight">{coursesCount}</span>
@@ -158,20 +151,20 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
           <div className="mt-4 space-y-1">
             <h3 className="text-sm font-bold text-zinc-800">I Miei Corsi</h3>
             <p className="text-xs text-zinc-400 font-medium">
-              {acceptedCourses > 0 
-                ? `${acceptedCourses} corsi attivi / frequentati` 
+              {acceptedCourses > 0
+                ? `${acceptedCourses} corsi attivi / frequentati`
                 : "Candidature in attesa di approvazione"}
             </p>
           </div>
-          <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-amber-750 group-hover:text-amber-800">
+          <div className="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-primary group-hover:brightness-90">
             <span>Materiali e lezioni</span>
             <ArrowRight className="h-3 w-3 transform group-hover:translate-x-1 transition-transform" />
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Sliding Glass Tabs Controller */}
-      <div className="glass p-1.5 rounded-2xl border border-zinc-200/40 bg-white/40 shadow-sm flex items-center gap-1 overflow-x-auto max-w-full no-scrollbar">
+      <div className="glass p-1.5 rounded-2xl border border-zinc-200/40 bg-white/40 shadow-sm flex items-center gap-1 overflow-x-auto min-w-0 no-scrollbar">
         <button
           onClick={() => setActiveTab("all")}
           className={`flex-1 min-w-[100px] text-center py-2.5 px-4 rounded-xl text-xs font-bold tracking-tight transition-all cursor-pointer shrink-0 ${
@@ -190,8 +183,8 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
               : "text-zinc-500 hover:text-zinc-800 hover:bg-white/30"
           }`}
         >
-          <Calendar className="h-3.5 w-3.5 text-amber-500" /> Tavoli
-          <span className="ml-1 bg-zinc-100 text-zinc-500 text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">{tablesCount}</span>
+          <Calendar className="h-3.5 w-3.5 text-primary" /> Tavoli
+          <Badge variant="neutral" className="ml-1 px-1.5 py-0">{tablesCount}</Badge>
         </button>
         <button
           onClick={() => setActiveTab("workspace")}
@@ -201,8 +194,8 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
               : "text-zinc-500 hover:text-zinc-800 hover:bg-white/30"
           }`}
         >
-          <Briefcase className="h-3.5 w-3.5 text-orange-500" /> Workspace
-          <span className="ml-1 bg-zinc-100 text-zinc-500 text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">{workspaceCount}</span>
+          <Briefcase className="h-3.5 w-3.5 text-primary" /> Workspace
+          <Badge variant="neutral" className="ml-1 px-1.5 py-0">{workspaceCount}</Badge>
         </button>
         <button
           onClick={() => setActiveTab("courses")}
@@ -212,8 +205,8 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
               : "text-zinc-500 hover:text-zinc-800 hover:bg-white/30"
           }`}
         >
-          <Award className="h-3.5 w-3.5 text-amber-600" /> Corsi
-          <span className="ml-1 bg-zinc-100 text-zinc-500 text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">{coursesCount}</span>
+          <Award className="h-3.5 w-3.5 text-primary" /> Corsi
+          <Badge variant="neutral" className="ml-1 px-1.5 py-0">{coursesCount}</Badge>
         </button>
       </div>
 
@@ -224,14 +217,14 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
           
           {/* Section: Tavoli Reservations */}
           {(activeTab === "all" || activeTab === "tables") && (
-            <div className="glass rounded-3xl p-6 bg-white/50 border-zinc-200/40 shadow-sm space-y-6 animate-in fade-in duration-300 min-w-0 overflow-hidden">
+            <Card className="space-y-6 animate-in fade-in duration-300 min-w-0 overflow-hidden">
               <div className="flex justify-between items-center border-b border-zinc-100 pb-3 gap-2">
                 <h2 className="text-sm font-extrabold text-zinc-800 uppercase tracking-widest flex items-center gap-2 shrink-0">
-                  <Calendar className="h-4.5 w-4.5 text-amber-500" /> Prenotazioni Tavoli
+                  <Calendar className="h-4.5 w-4.5 text-primary" /> Prenotazioni Tavoli
                 </h2>
-                <Link 
-                  href="/events" 
-                  className="text-xs text-amber-600 font-bold hover:text-amber-700 flex items-center gap-1 shrink-0"
+                <Link
+                  href="/events"
+                  className="text-xs text-primary font-bold hover:brightness-90 flex items-center gap-1 shrink-0"
                 >
                   Nuova <span className="hidden sm:inline">Prenotazione</span> <ArrowRight className="h-3 w-3" />
                 </Link>
@@ -239,32 +232,29 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
 
               {tablesCount === 0 ? (
                 <div className="text-center py-10 px-4 space-y-4">
-                  <div className="mx-auto w-12 h-12 bg-amber-500/10 text-amber-600 rounded-full flex items-center justify-center">
+                  <div className="mx-auto w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                     <Calendar className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-zinc-850">Nessuna prenotazione trovata</h4>
+                    <h4 className="text-sm font-bold text-zinc-800">Nessuna prenotazione trovata</h4>
                     <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
                       Non hai ancora prenotato alcun tavolo. Unisciti ai nostri eventi esclusivi con cena o aperitivo.
                     </p>
                   </div>
-                  <Link
-                    href="/events"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 py-2.5 shadow-sm transition-all cursor-pointer"
-                  >
+                  <Button href="/events" variant="primary" size="sm">
                     Scopri Eventi
-                  </Link>
+                  </Button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4 min-w-0">
-                  {user.reservations.map((res) => (
+                  {user.tableReservations.map((res) => (
                     <div
                       key={res.id}
                       className="p-5 rounded-2xl bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-zinc-200 transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 group min-w-0 overflow-hidden"
                     >
                       <div className="space-y-2 min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-extrabold text-sm text-zinc-855 group-hover:text-amber-600 transition-colors truncate">
+                          <p className="font-extrabold text-sm text-zinc-800 group-hover:text-primary transition-colors truncate">
                             {res.event?.name || "Evento Ottagora"}
                           </p>
                         </div>
@@ -276,7 +266,7 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                           <span className="text-zinc-200 hidden sm:inline">•</span>
                           <span className="flex items-center gap-1 shrink-0">
                             <Clock className="h-3.5 w-3.5" />
-                            {res.timeSlot}
+                            {res.timeSlot ?? "—"}
                           </span>
                           <span className="text-zinc-200 hidden sm:inline">•</span>
                           <span className="flex items-center gap-1 shrink-0">
@@ -286,36 +276,35 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                         </div>
                         {res.menu && (
                           <div className="pt-1">
-                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-amber-700 bg-amber-500/10 px-3 py-1 rounded-full max-w-full truncate">
+                            <Badge variant="primary" className="max-w-full truncate">
                               <BookOpen className="h-3 w-3 shrink-0" />
                               Menù: {res.menu.name}
-                            </span>
+                            </Badge>
                           </div>
                         )}
                       </div>
                       <div className="text-left sm:text-right shrink-0">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 px-3.5 py-1 text-xs font-bold leading-5 shadow-sm">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <Badge variant="success" dot className="shadow-sm">
                           Confermata
-                        </span>
+                        </Badge>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-            </div>
+            </Card>
           )}
 
           {/* Section: Workspace Bookings */}
           {(activeTab === "all" || activeTab === "workspace") && (
-            <div className="glass rounded-3xl p-6 bg-white/50 border-zinc-200/40 shadow-sm space-y-6 animate-in fade-in duration-300 min-w-0 overflow-hidden">
+            <Card className="space-y-6 animate-in fade-in duration-300 min-w-0 overflow-hidden">
               <div className="flex justify-between items-center border-b border-zinc-100 pb-3 gap-2">
                 <h2 className="text-sm font-extrabold text-zinc-800 uppercase tracking-widest flex items-center gap-2 shrink-0">
-                  <Briefcase className="h-4.5 w-4.5 text-orange-500" /> Aule & Workspace
+                  <Briefcase className="h-4.5 w-4.5 text-primary" /> Aule & Workspace
                 </h2>
-                <Link 
-                  href="/workspace" 
-                  className="text-xs text-orange-600 font-bold hover:text-orange-700 flex items-center gap-1 shrink-0"
+                <Link
+                  href="/workspace"
+                  className="text-xs text-primary font-bold hover:brightness-90 flex items-center gap-1 shrink-0"
                 >
                   Prenota <span className="hidden sm:inline">Aula</span> <ArrowRight className="h-3 w-3" />
                 </Link>
@@ -323,21 +312,18 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
 
               {workspaceCount === 0 ? (
                 <div className="text-center py-10 px-4 space-y-4">
-                  <div className="mx-auto w-12 h-12 bg-orange-500/10 text-orange-600 rounded-full flex items-center justify-center">
+                  <div className="mx-auto w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                     <Briefcase className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-zinc-850">Nessun workspace prenotato</h4>
+                    <h4 className="text-sm font-bold text-zinc-800">Nessun workspace prenotato</h4>
                     <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
-                      Hai bisogno di una sala riunioni privata o di un'aula multimediale professionale? Organizza le tue sessioni qui.
+                      Hai bisogno di una sala riunioni privata o di un&apos;aula multimediale professionale? Organizza le tue sessioni qui.
                     </p>
                   </div>
-                  <Link
-                    href="/workspace"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-4 py-2.5 shadow-sm transition-all cursor-pointer"
-                  >
+                  <Button href="/workspace" variant="primary" size="sm">
                     Prenota Spazio
-                  </Link>
+                  </Button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4 min-w-0">
@@ -347,7 +333,7 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                       className="p-5 rounded-2xl bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-zinc-200 transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 group min-w-0 overflow-hidden"
                     >
                       <div className="space-y-2 min-w-0 flex-1">
-                        <p className="font-extrabold text-sm text-zinc-855 group-hover:text-orange-600 transition-colors truncate">
+                        <p className="font-extrabold text-sm text-zinc-800 group-hover:text-primary transition-colors truncate">
                           {booking.room?.name || "Aula Workspace"}
                         </p>
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400 font-semibold">
@@ -364,43 +350,37 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                           <span className="shrink-0">{booking.durationMinutes} min ({Math.round(booking.durationMinutes / 60)}h)</span>
                         </div>
                         <p className="text-xs font-extrabold text-zinc-700 flex items-center gap-1">
-                          <TrendingUp className="h-3.5 w-3.5 text-orange-500" />
+                          <TrendingUp className="h-3.5 w-3.5 text-primary" />
                           Tariffa: <span className="text-zinc-900">{booking.cost.toFixed(2)}€</span>
                         </p>
                       </div>
                       <div className="text-left sm:text-right shrink-0">
-                        <span className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold leading-5 border shadow-sm ${
-                          booking.status === "APPROVED"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                            : booking.status === "REJECTED"
-                            ? "bg-red-50 text-red-650 border-red-100"
-                            : "bg-amber-50 text-amber-700 border-amber-100"
-                        }`}>
-                          {booking.status === "APPROVED" && (
-                            <>
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              Approvata
-                            </>
-                          )}
+                        <Badge
+                          variant={
+                            booking.status === "APPROVED"
+                              ? "success"
+                              : booking.status === "REJECTED"
+                              ? "danger"
+                              : "primary"
+                          }
+                          dot={booking.status !== "REJECTED"}
+                          className="shadow-sm"
+                        >
+                          {booking.status === "APPROVED" && "Approvata"}
                           {booking.status === "REJECTED" && (
                             <>
-                              <XCircle className="h-3 w-3 text-red-500" />
+                              <XCircle className="h-3 w-3" />
                               Rifiutata
                             </>
                           )}
-                          {booking.status === "PENDING" && (
-                            <>
-                              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                              In attesa
-                            </>
-                          )}
-                        </span>
+                          {booking.status === "PENDING" && "In attesa"}
+                        </Badge>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-            </div>
+            </Card>
           )}
 
         </div>
@@ -408,14 +388,14 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
         {/* Right column (Corsi & Formazione) */}
         <div className="space-y-8 min-w-0">
           {(activeTab === "all" || activeTab === "courses") && (
-            <div className="glass rounded-3xl p-6 bg-white/50 border-zinc-200/40 shadow-sm space-y-6 animate-in fade-in duration-300 min-w-0 overflow-hidden">
+            <Card className="space-y-6 animate-in fade-in duration-300 min-w-0 overflow-hidden">
               <div className="flex justify-between items-center border-b border-zinc-100 pb-3 gap-2">
                 <h2 className="text-sm font-extrabold text-zinc-800 uppercase tracking-widest flex items-center gap-2 shrink-0">
-                  <Award className="h-4.5 w-4.5 text-amber-600" /> I Miei Corsi
+                  <Award className="h-4.5 w-4.5 text-primary" /> I Miei Corsi
                 </h2>
-                <Link 
-                  href="/courses" 
-                  className="text-xs text-amber-700 font-bold hover:text-amber-800 flex items-center gap-1 shrink-0"
+                <Link
+                  href="/courses"
+                  className="text-xs text-primary font-bold hover:brightness-90 flex items-center gap-1 shrink-0"
                 >
                   Sfoglia <span className="hidden sm:inline">Corsi</span> <ArrowRight className="h-3 w-3" />
                 </Link>
@@ -423,21 +403,18 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
 
               {coursesCount === 0 ? (
                 <div className="text-center py-10 px-4 space-y-4">
-                  <div className="mx-auto w-12 h-12 bg-amber-500/10 text-amber-600 rounded-full flex items-center justify-center">
+                  <div className="mx-auto w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                     <Award className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-zinc-850">Candidati a un corso</h4>
+                    <h4 className="text-sm font-bold text-zinc-800">Candidati a un corso</h4>
                     <p className="text-xs text-zinc-400 mt-1">
-                      Ottagora offre percorsi formativi specialistici d'avanguardia. Presenta la tua candidatura per iniziare.
+                      Ottagora offre percorsi formativi specialistici d&apos;avanguardia. Presenta la tua candidatura per iniziare.
                     </p>
                   </div>
-                  <Link
-                    href="/courses"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-xl px-4 py-2.5 shadow-sm transition-all cursor-pointer"
-                  >
+                  <Button href="/courses" variant="primary" size="sm">
                     Scopri Corsi
-                  </Link>
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-4 min-w-0">
@@ -445,40 +422,29 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                     <div key={enr.id} className="p-5 rounded-2xl bg-white border border-zinc-100 shadow-sm space-y-4 group min-w-0 overflow-hidden">
                       <div className="flex justify-between items-start gap-3 min-w-0">
                         <div className="space-y-1 min-w-0 flex-1">
-                          <p className="font-extrabold text-sm text-zinc-855 group-hover:text-amber-750 transition-colors leading-snug truncate">
-                            {enr.course?.name}
+                          <p className="font-extrabold text-sm text-zinc-800 group-hover:text-primary transition-colors leading-snug truncate">
+                            {enr.course?.title}
                           </p>
-                          <p className="text-[10px] text-zinc-450 font-semibold flex items-center gap-1 shrink-0">
+                          <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1 shrink-0">
                             <Clock className="h-3 w-3 text-zinc-300" />
                             Inviata: {new Date(enr.createdAt).toLocaleDateString("it-IT")}
                           </p>
                         </div>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold leading-5 border shadow-sm shrink-0 ${
-                          enr.status === "ACCEPTED"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                            : enr.status === "REJECTED"
-                            ? "bg-red-50 text-red-650 border-red-105"
-                            : "bg-amber-50 text-amber-700 border-amber-100"
-                        }`}>
-                          {enr.status === "ACCEPTED" && (
-                            <>
-                              <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                              Iscritto
-                            </>
-                          )}
-                          {enr.status === "REJECTED" && (
-                            <>
-                              <span className="h-1 w-1 rounded-full bg-red-500" />
-                              Escluso
-                            </>
-                          )}
-                          {enr.status === "PENDING" && (
-                            <>
-                              <span className="h-1 w-1 rounded-full bg-amber-500 animate-pulse" />
-                              In attesa
-                            </>
-                          )}
-                        </span>
+                        <Badge
+                          variant={
+                            enr.status === "ACCEPTED"
+                              ? "success"
+                              : enr.status === "REJECTED"
+                              ? "danger"
+                              : "primary"
+                          }
+                          dot
+                          className="shadow-sm shrink-0"
+                        >
+                          {enr.status === "ACCEPTED" && "Iscritto"}
+                          {enr.status === "REJECTED" && "Escluso"}
+                          {enr.status === "PENDING" && "In attesa"}
+                        </Badge>
                       </div>
 
                       {/* Display course materials only when application status is ACCEPTED */}
@@ -494,13 +460,13 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                                 href={mat.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between text-xs text-amber-750 bg-amber-500/5 hover:bg-amber-500/10 p-3 rounded-xl border border-amber-500/10 font-bold transition-all shadow-sm group/file min-w-0 overflow-hidden"
+                                className="flex items-center justify-between text-xs text-ink bg-primary/5 hover:bg-primary/10 p-3 rounded-xl border border-primary/10 font-bold transition-all shadow-sm group/file min-w-0 overflow-hidden"
                               >
                                 <span className="flex items-center gap-2 truncate flex-1 min-w-0">
-                                  <FileText className="h-4 w-4 text-amber-600 shrink-0" />
-                                  <span className="truncate group-hover/file:underline">{mat.name}</span>
+                                  <FileText className="h-4 w-4 text-primary shrink-0" />
+                                  <span className="truncate group-hover/file:underline">{mat.title}</span>
                                 </span>
-                                <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-extrabold bg-white px-2 py-0.5 rounded-md border border-zinc-150 shrink-0">
+                                <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-extrabold bg-white px-2 py-0.5 rounded-md border border-zinc-200 shrink-0">
                                   {mat.type}
                                 </span>
                               </a>
@@ -512,7 +478,7 @@ export default function DashboardTabs({ user, workspaceBookings }: DashboardTabs
                   ))}
                 </div>
               )}
-            </div>
+            </Card>
           )}
         </div>
       </div>

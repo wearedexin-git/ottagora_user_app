@@ -1,0 +1,235 @@
+/**
+ * Font locali del cliente (no Google Fonts / CDN esterni, per coerenza con il backoffice).
+ * Font titoli: Zalando Sans Expanded — 8 pesi statici, normal + italic, in public/fonts/ZalandoSansExpanded/.
+ */
+
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-ExtraLightItalic.ttf") format("truetype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-MediumItalic.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-SemiBoldItalic.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-ExtraBoldItalic.ttf") format("truetype");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zalando Sans Expanded";
+  src: url("/fonts/ZalandoSansExpanded/ZalandoSansExpanded-BlackItalic.ttf") format("truetype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/**
+ * Font body: Söhne (Klim Type Foundry), famiglia standard (Breit/Mono/Schmal non attivate).
+ * NB: questi sono i file "Test" gratuiti del foundry, pensati per prove/mockup — non licenziati
+ * per un prodotto live. Da sostituire con i file della licenza commerciale prima del deploy reale.
+ */
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Extraleicht-BF663d89cd3f5c5.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-ExtraleichtKursiv-BF663d89cd3f0d1.otf") format("opentype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Leicht-BF663d89cd4952e.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-LeichtKursiv-BF663d89cd9a361.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Buch-BF663d89cd32e6a.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-BuchKursiv-BF663d89cd3e887.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Kraftig-BF663d89cd37e26.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-KraftigKursiv-BF663d89cd2bd4b.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Halbfett-BF663d89cd2d67b.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-HalbfettKursiv-BF663d89cd41624.otf") format("opentype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Dreiviertelfett-BF663d89ccc5f66.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-DreiviertelfettKursiv-BF663d89cd2f687.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Fett-BF663d89cca89ff.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-FettKursiv-BF663d89cc64878.otf") format("opentype");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-Extrafett-BF663d89cc9f2c0.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Söhne";
+  src: url("/fonts/Sohne/TestSohne-ExtrafettKursiv-BF663d89ccb8000.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}

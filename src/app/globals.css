@@ -1,23 +1,23 @@
 @import "tailwindcss";
-
-:root {
-  --background: #f9f9fb;
-  --foreground: #09090b;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@import "./fonts.css";
+@import "./theme.css";
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: var(--font-body), sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
+  font-family: var(--font-heading);
 }
 
 /* Apple-style Light Glassmorphism */
@@ -30,7 +30,16 @@ body {
 }
 
 .glass-glow {
-  box-shadow: 0 10px 40px -10px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+/* Ogni pagina è figlio diretto di un flex-col (vedi layout.tsx): senza questo, un
+   flex-item si allarga fino al contenuto più largo al suo interno (badge, bottoni
+   affiancati, ecc.), sfondando la viewport su mobile — min-width:0 da solo non basta,
+   serve una larghezza esplicita perché "stretch" prevalga sul contenuto. */
+.page-shell > * {
+  width: 100%;
+  min-width: 0;
 }
 
 /* Custom scrollbars */

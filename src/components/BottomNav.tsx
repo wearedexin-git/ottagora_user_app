@@ -2,17 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, BookOpen, Briefcase, User } from "lucide-react";
+import {
+  IconNavDashboard,
+  IconNavEvents,
+  IconNavWorkspace,
+  IconNavCourses,
+  IconNavProfile,
+} from "@/components/icons";
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Dashboard", href: "/", icon: Home },
-    { label: "Eventi", href: "/events", icon: Calendar },
-    { label: "Workspace", href: "/workspace", icon: Briefcase },
-    { label: "Corsi", href: "/courses", icon: BookOpen },
-    { label: "Profilo", href: "/area-personale", icon: User },
+    { label: "Dashboard", href: "/", icon: IconNavDashboard },
+    { label: "Eventi", href: "/events", icon: IconNavEvents },
+    { label: "Workspace", href: "/workspace", icon: IconNavWorkspace },
+    { label: "Corsi", href: "/courses", icon: IconNavCourses },
+    { label: "Profilo", href: "/area-personale", icon: IconNavProfile },
   ];
 
   return (
@@ -30,18 +36,18 @@ export default function BottomNav() {
             >
               <Icon
                 className={`h-5 w-5 transition-transform duration-200 group-hover:scale-110 ${
-                  isActive ? "text-amber-600" : "text-zinc-400 group-hover:text-zinc-650"
+                  isActive ? "text-primary" : "text-zinc-400 group-hover:text-zinc-600"
                 }`}
               />
               <span
                 className={`text-[10px] font-medium tracking-wide transition-colors duration-200 ${
-                  isActive ? "text-amber-600 font-semibold" : "text-zinc-500 group-hover:text-zinc-800"
+                  isActive ? "text-primary font-semibold" : "text-zinc-500 group-hover:text-zinc-800"
                 }`}
               >
                 {item.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 h-1 w-1 rounded-full bg-amber-600 animate-pulse" />
+                <span className="absolute bottom-0 h-1 w-1 rounded-full bg-primary animate-pulse" />
               )}
             </Link>
           );

@@ -2,6 +2,9 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
+const isProd = process.env.NODE_ENV === "production";
+const cookiePrefix = isProd ? "__Secure-" : "";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
@@ -13,33 +16,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email) return null;
 
-        const email = credentials.email as string;
+        const email = String(credentials.email).trim().toLowerCase();
 
-        // Trova o crea l'utente mock in base all'email (come da specifica del back-office)
         let user = await prisma.user.findUnique({
           where: { email },
         });
 
         if (!user) {
-          let role = "USER";
-          if (email.includes("admin")) role = "SUPERADMIN";
-          else if (email.includes("host")) role = "HOST_MANAGER";
-          else if (email.includes("restaurant")) role = "RESTAURANT_MANAGER";
-          else if (email.includes("training")) role = "TRAINING_MANAGER";
-          else if (email.includes("teacher")) role = "TEACHER";
-          else if (email.includes("event")) role = "EVENT_MANAGER";
-
           user = await prisma.user.create({
             data: {
               email,
-              role,
-              type: "PRIVATE",
+              role: "USER",
+              userType: "PRIVATE",
               name: email.split("@")[0],
             },
           });
         }
 
-        if (user.archived) {
+        if (user.archived) return null;
+
+        if (user.role !== "USER") {
           return null;
         }
 
@@ -74,4 +70,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   trustHost: true,
+  cookies: {
+    sessionToken: {
+      name: `${cookiePrefix}ottagora.ua.session-token`,
+      options: { httpOnly: true, sameSite: "lax", path: "/", secure: isProd },
+    },
+    callbackUrl: {
+      name: `${cookiePrefix}ottagora.ua.callback-url`,
+      options: { httpOnly: true, sameSite: "lax", path: "/", secure: isProd },
+    },
+    csrfToken: {
+      name: `${cookiePrefix}ottagora.ua.csrf-token`,
+      options: { httpOnly: true, sameSite: "lax", path: "/", secure: isProd },
+    },
+  },
 });

@@ -1,85 +1,89 @@
 import { loginAction } from "@/app/actions/auth-actions";
+import Link from "next/link";
+import { Card, Button, Alert } from "@/components/ui";
+import { DiagonalPattern } from "@/components/patterns";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
+  const errorMsg =
+    params.error === "manager"
+      ? "Questo account è riservato al backoffice. Usa l'app solo con account utente."
+      : params.error === "archived"
+        ? "Account disabilitato. Contatta l'amministratore."
+        : null;
+
   return (
     <div className="relative isolate flex-1 flex flex-col items-center justify-center py-16 px-4">
-      {/* Background glow */}
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
-        <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-amber-200 to-orange-200 opacity-20 sm:w-[72.1875rem]"></div>
-      </div>
-
+      <DiagonalPattern className="absolute inset-0 -z-10 h-full w-full" />
       <div className="w-full max-w-md">
-        <div className="glass rounded-3xl p-8 shadow-xl bg-white/50 border-zinc-200/40">
+        <Card padding="lg" className="shadow-xl">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">Accedi a Ottagora</h2>
             <p className="mt-2 text-xs text-zinc-500 font-medium">
-              Inserisci la tua email per accedere all'area personale.
+              Area riservata agli utenti finali.
             </p>
           </div>
 
+          {errorMsg && (
+            <Alert variant="danger" className="mb-6">
+              {errorMsg}
+            </Alert>
+          )}
+
           <form action={loginAction} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                Indirizzo Email
+              <label htmlFor="email" className="block text-xs font-bold text-zinc-400 uppercase mb-2">
+                Email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                placeholder="nome@esempio.com"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+                placeholder="user@ottagora.com"
+                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
               />
             </div>
-
             <div>
-              <label htmlFor="password" className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                Password <span className="text-zinc-400 font-medium">(Fittizia in questa fase)</span>
+              <label htmlFor="password" className="block text-xs font-bold text-zinc-400 uppercase mb-2">
+                Password <span className="font-normal">(mock: qualsiasi)</span>
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
               />
             </div>
-
-            <button
-              type="submit"
-              className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-3 text-sm font-bold text-white shadow-md hover:brightness-110 transition-all cursor-pointer"
-            >
+            <Button type="submit" variant="primary" size="lg" fullWidth>
               Accedi
-            </button>
+            </Button>
           </form>
 
-          {/* Quick-fill accounts for demo */}
-          <div className="mt-8 pt-6 border-t border-zinc-150 text-center">
-            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-3">
-              Account di test rapidi
-            </p>
-            <div className="flex flex-col gap-2">
-              <form action={loginAction} className="inline-block">
-                <input type="hidden" name="email" value="user@ottagora.com" />
-                <button
-                  type="submit"
-                  className="w-full text-xs text-amber-700 hover:text-amber-800 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 py-2.5 px-3 rounded-xl transition-all font-semibold"
-                >
-                  Accedi come Utente Standard (Giuseppe Verdi)
-                </button>
-              </form>
-              <form action={loginAction} className="inline-block">
-                <input type="hidden" name="email" value="teacher@ottagora.com" />
-                <button
-                  type="submit"
-                  className="w-full text-xs text-zinc-500 hover:text-zinc-800 bg-zinc-100 hover:bg-zinc-200 border border-zinc-200/50 py-2.5 px-3 rounded-xl transition-all font-semibold"
-                >
-                  Accedi come Docente (Chiara Rossi)
-                </button>
-              </form>
-            </div>
+          <p className="mt-6 text-center text-xs text-zinc-500">
+            Non hai un account?{" "}
+            <Link href="/register" className="font-bold text-primary hover:brightness-90">
+              Registrati
+            </Link>
+          </p>
+
+          <div className="mt-6 pt-6 border-t border-zinc-150 text-center">
+            <form action={loginAction}>
+              <input type="hidden" name="email" value="user@ottagora.com" />
+              <button
+                type="submit"
+                className="w-full text-xs text-ink bg-primary/5 hover:bg-primary/10 border border-primary/20 py-2.5 px-3 rounded-xl font-semibold cursor-pointer"
+              >
+                Demo: user@ottagora.com
+              </button>
+            </form>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

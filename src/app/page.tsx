@@ -1,21 +1,29 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getPublicUpcomingEvents } from "@/lib/events";
 import Link from "next/link";
-import { Calendar, Briefcase, Award, ArrowRight } from "lucide-react";
+import { IconCalendar, IconBriefcase, IconAward, IconArrowRight } from "@/components/icons";
+import { Card, Button, Badge } from "@/components/ui";
 
 export const revalidate = 0;
 
 export default async function Home() {
   const session = await auth();
-  
+
   let user = null;
-  let workspaceBookings: any[] = [];
-  
+  let workspaceBookings: Array<{
+    id: string;
+    date: Date;
+    durationMinutes: number;
+    status: string;
+    room: { name: string } | null;
+  }> = [];
+
   if (session?.user?.email) {
     user = await prisma.user.findUnique({
       where: { email: session.user.email },
       include: {
-        reservations: {
+        tableReservations: {
           where: { status: "CONFIRMED" },
           include: { event: true },
           take: 2,
@@ -31,10 +39,7 @@ export default async function Home() {
 
     if (user) {
       workspaceBookings = await prisma.bookingRequest.findMany({
-        where: {
-          requester: user.email,
-          status: "APPROVED",
-        },
+        where: { userId: user.id },
         include: { room: true },
         take: 2,
         orderBy: { date: "asc" },
@@ -42,25 +47,18 @@ export default async function Home() {
     }
   }
 
-  // Fetch upcoming events feed
-  const events = await prisma.event.findMany({
-    include: { room: true },
-    orderBy: { date: "asc" },
-    take: 3,
-  });
+  const events = await getPublicUpcomingEvents(3);
 
   return (
     <div className="relative isolate flex-1 flex flex-col justify-start py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
-      {/* Background glow effects */}
       <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
-        <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-amber-200 to-orange-200 opacity-20 sm:w-[72.1875rem]"></div>
+        <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36rem] -translate-x-1/2 rotate-[30deg] bg-primary opacity-15 sm:w-[72.1875rem]"></div>
       </div>
 
-      {/* Welcome & Dashboard Intro */}
       <div className="mb-10 text-left">
         {user ? (
           <div>
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">Dashboard</span>
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">Dashboard</span>
             <h1 className="text-3xl font-extrabold text-zinc-900 mt-1 tracking-tight">
               Ciao, {user.name || user.email}
             </h1>
@@ -71,36 +69,33 @@ export default async function Home() {
         ) : (
           <div className="py-6">
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Ottagora Hub</span>
-            <h1 className="text-4xl font-extrabold text-zinc-900 mt-1 tracking-tight">
-              Spazio Connesso.
-            </h1>
+            <h1 className="text-4xl font-extrabold text-zinc-900 mt-1 tracking-tight">Spazio Connesso.</h1>
             <p className="text-zinc-500 text-sm mt-2 max-w-xl">
-              Prenota il tuo workspace flessibile, iscriviti a corsi professionali, partecipa a eventi esclusivi e scopri menù d'autore.
+              Prenota il tuo workspace flessibile, iscriviti a corsi professionali, partecipa a eventi esclusivi e scopri menù d&apos;autore.
             </p>
-            <div className="mt-6">
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-md hover:brightness-110 transition-all cursor-pointer"
-              >
-                Accedi per iniziare
-              </Link>
+            <div className="mt-6 flex gap-3">
+              <Button href="/login" variant="primary">
+                Accedi
+              </Button>
+              <Button href="/register" variant="outline">
+                Registrati
+              </Button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Logged-in Summary Dashboard */}
       {user && (
         <div className="space-y-8 mb-10">
           <div>
-            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">Le Tue Attività Attive</h2>
+            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">
+              Le Tue Attività Attive
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Event Table Reservations */}
-              {user.reservations.map((res) => (
-                <div key={res.id} className="glass rounded-2xl p-5 border border-zinc-200/40 flex items-start gap-4 shadow-sm hover:border-zinc-300 transition-all">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-600">
-                    <Calendar className="h-5 w-5" />
+              {user.tableReservations.map((res) => (
+                <Card key={res.id} padding="sm" className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <IconCalendar className="h-5 w-5" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-zinc-800">Tavolo Prenotato</h3>
@@ -111,76 +106,83 @@ export default async function Home() {
                       <span>{res.timeSlot}</span>
                     </div>
                   </div>
-                </div>
+                </Card>
               ))}
 
-              {/* Workspace Bookings */}
               {workspaceBookings.map((booking) => (
-                <div key={booking.id} className="glass rounded-2xl p-5 border border-zinc-200/40 flex items-start gap-4 shadow-sm hover:border-zinc-300 transition-all">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-600">
-                    <Briefcase className="h-5 w-5" />
+                <Card key={booking.id} padding="sm" className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <IconBriefcase className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-zinc-800">Workspace Riservato</h3>
+                    <h3 className="text-sm font-bold text-zinc-800">Workspace</h3>
                     <p className="text-xs text-zinc-500 mt-0.5">{booking.room?.name}</p>
                     <div className="flex gap-2 mt-2 text-[10px] text-zinc-400 font-medium">
                       <span>{new Date(booking.date).toLocaleDateString("it-IT")}</span>
                       <span>•</span>
-                      <span>{booking.durationMinutes} min</span>
+                      <span>{booking.status}</span>
                     </div>
                   </div>
-                </div>
+                </Card>
               ))}
 
-              {/* Course Enrollments */}
               {user.enrollments.map((enr) => (
-                <div key={enr.id} className="glass rounded-2xl p-5 border border-zinc-200/40 flex items-start gap-4 shadow-sm hover:border-zinc-300 transition-all">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-600">
-                    <Award className="h-5 w-5" />
+                <Card key={enr.id} padding="sm" className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <IconAward className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-zinc-800">Corso in Valutazione</h3>
-                    <p className="text-xs text-zinc-500 mt-0.5">{enr.course?.name}</p>
-                    <span className="inline-block mt-2 text-[9px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                    <h3 className="text-sm font-bold text-zinc-800">Corso</h3>
+                    <p className="text-xs text-zinc-500 mt-0.5">{enr.course?.title}</p>
+                    <Badge
+                      variant={enr.status === "ACCEPTED" ? "success" : "primary"}
+                      className="mt-2"
+                    >
                       {enr.status === "ACCEPTED" ? "Iscritto" : "In attesa"}
-                    </span>
+                    </Badge>
                   </div>
-                </div>
+                </Card>
               ))}
 
-              {user.reservations.length === 0 && workspaceBookings.length === 0 && user.enrollments.length === 0 && (
-                <div className="col-span-2 p-8 text-center text-xs text-zinc-400 glass rounded-2xl border border-zinc-200/40 shadow-sm">
-                  Nessuna attività prenotata o candidatura attiva.
-                </div>
-              )}
+              {user.tableReservations.length === 0 &&
+                workspaceBookings.length === 0 &&
+                user.enrollments.length === 0 && (
+                  <Card padding="lg" className="col-span-2 text-center text-xs text-zinc-400">
+                    Nessuna attività prenotata o candidatura attiva.
+                  </Card>
+                )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Feed Eventi in Programma */}
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Feed Eventi del Momento</h2>
-          <Link href="/events" className="text-xs text-amber-600 hover:text-amber-700 font-bold inline-flex items-center gap-1">
-            Vedi tutti <ArrowRight className="h-3 w-3" />
+          <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            Feed Eventi del Momento
+          </h2>
+          <Link
+            href="/events"
+            className="text-xs text-primary hover:brightness-90 font-bold inline-flex items-center gap-1"
+          >
+            Vedi tutti <IconArrowRight className="h-3 w-3" />
           </Link>
         </div>
 
         <div className="space-y-4">
           {events.map((event) => (
-            <div
+            <Card
               key={event.id}
-              className="glass rounded-2xl p-6 border border-zinc-200/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-zinc-350 shadow-sm hover:shadow-md"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
               <div className="space-y-2">
                 <div className="flex gap-2">
-                  <span className="text-[10px] font-bold tracking-widest text-amber-600 uppercase bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                  <Badge variant="primary" className="uppercase tracking-widest">
                     {event.type}
-                  </span>
-                  <span className="text-[10px] font-semibold text-zinc-500 bg-zinc-100 px-2.5 py-0.5 rounded-full">
+                  </Badge>
+                  <Badge variant="neutral">
                     {event.cost === 0 ? "Gratuito" : `${event.cost.toFixed(2)}€`}
-                  </span>
+                  </Badge>
                 </div>
                 <h3 className="text-lg font-bold text-zinc-900 leading-snug">{event.name}</h3>
                 <p className="text-xs text-zinc-500">{event.description}</p>
@@ -196,14 +198,11 @@ export default async function Home() {
                   </p>
                   <p>{event.timeSlot}</p>
                 </div>
-                <Link
-                  href={`/events/${event.id}/reserve`}
-                  className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:brightness-110 transition-all cursor-pointer"
-                >
+                <Button href={`/events/${event.id}/reserve`} variant="primary" size="sm">
                   Prenota
-                </Link>
+                </Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </div>

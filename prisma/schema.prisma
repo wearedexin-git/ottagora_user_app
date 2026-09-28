@@ -6,402 +6,460 @@ datasource db {
   provider = "sqlite"
 }
 
-// 1. User & Security
+// Utente e Sicurezza
 model User {
-  id                    String             @id @default(cuid())
-  email                 String             @unique
-  role                  String             @default("USER") // SUPERADMIN, HOST_MANAGER, RESTAURANT_MANAGER, TRAINING_MANAGER, TEACHER, EVENT_MANAGER, ADMINISTRATION, RIDER, USER
-  type                  String             @default("PRIVATE") // PRIVATE, COMPANY
-  archived              Boolean            @default(false)
-  name                  String?
-  surname               String?
-  phone                 String?
-  taxCode               String?            // Codice Fiscale or P.IVA
-  companyName           String?            // Ragione Sociale (Azienda)
-  sdiPec                String?            // PEC or SDI code (Azienda)
-  bio                   String?            // Teacher biography
-  competencies          String?            // Teacher competencies
-  
-  // Addresses
-  residenceAddress      String?
-  residenceCity         String?
-  residenceZip          String?
-  residenceProvince     String?
-  
-  billingAddress        String?
-  billingCity           String?
-  billingZip            String?
-  billingProvince       String?
-  billingSameAsResidence Boolean           @default(true)
-  
-  shippingAddress       String?
-  shippingCity          String?
-  shippingZip           String?
-  shippingProvince      String?
-  
-  // Dietary & Preferences
-  diet                  String?            // VEGAN, VEGETARIAN, GLUTEN_FREE, etc.
-  mealVouchers          Boolean            @default(false)
-  
-  // Relations
-  enrollments           CourseEnrollment[]
-  teachesCourses        Course[]           @relation("TeacherCourses")
-  teachesLessons        Lesson[]           @relation("TeacherLessons")
-  reservations          TableReservation[]
-  materialsUploaded     CourseMaterial[]   @relation("UploaderMaterials")
-  
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
+  id               String             @id @default(cuid())
+  email            String             @unique
+  name             String?
+  surname          String?
+  password         String?
+  role             String             @default("USER") // SUPERADMIN, HOST_MANAGER, RESTAURANT_MANAGER, TRAINING_MANAGER, TEACHER, EVENT_MANAGER, ADMINISTRATION, RIDER
+  phone            String?
+  taxCode          String?            // codice fiscale (privato)
+  birthDate        DateTime?
+  addressLine1     String?
+  addressLine2     String?
+  addressCity      String?
+  addressProvince  String?
+  addressZip       String?
+  addressCountry   String?            @default("IT")
+  billingSameAsResidence Boolean      @default(true)
+  billingLine1     String?
+  billingLine2     String?
+  billingCity      String?
+  billingProvince  String?
+  billingZip       String?
+  billingCountry   String?
+  companyName      String?            // ragione sociale (profilo azienda, app utente)
+  sdiPec           String?            // codice SDI o PEC (profilo azienda)
+  shippingLine1    String?
+  shippingLine2    String?
+  shippingCity     String?
+  shippingZip      String?
+  shippingProvince String?
+  diet             String?            // VEGAN, VEGETARIAN, GLUTEN_FREE, ecc.
+  mealVouchers     Boolean            @default(false)
+  bio              String?
+  competencies     String?            // competenze docente (Training Manager)
+  archived         Boolean            @default(false) // docente archiviato: dati conservati, accesso disabilitato
+  enrollments      CourseEnrollment[]
+  userType         String             @default("PRIVATE") // PRIVATE, COMPANY
+  coursesTeaching    Course[]
+  lessonsTeaching    Lesson[]           @relation("LessonTeacher")
+  materialsUploaded  CourseMaterial[]   @relation("MaterialUploader")
+  tableReservations  TableReservation[]
+  bookingRequests    BookingRequest[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 }
 
-// 2. Tassonomie (SuperAdmin Configs)
+// Spazi (Host Manager)
+model Room {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // TRAINING, MEETING, MULTI_SPACE
+  capacity    Int      @default(0)
+  status      String   @default("AVAILABLE") // AVAILABLE, OCCUPIED, MAINTENANCE
+  notes       String?  // Segnalazioni guasti
+  templateId  String?
+  template    RoomTemplate? @relation(name: "RoomTemplateRooms", fields: [templateId], references: [id])
+  roomTemplates RoomTemplate[] @relation(name: "RoomTemplateRoom")
+  hourlyCost  Float    @default(0)
+  availability String?  // JSON string per giorni e fasce orarie incrociate
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  slots       CalendarSlot[]
+  tables      Table[]
+  services    RoomService[]
+  bookingRequests BookingRequest[]
+  lessons            Lesson[]
+  trainingCourses    Course[]
+  events             Event[]
+  tableReservations  TableReservation[]
+  courseClasses      CourseClass[]
+}
+
 model TemplateType {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String   @unique // tassonomia: valore salvato in RoomTemplate.type
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MealTimeSlot {
   id        String   @id @default(cuid())
-  name      String   @unique // Colazione, Pranzo, Cena, etc.
+  name      String   @unique // tassonomia: valore salvato in Menu.timeSlot e Event.timeSlot
+  timeFrom  String   @default("09:00") // HH:mm
+  timeTo    String   @default("18:00") // HH:mm
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model BookingType {
   id        String   @id @default(cuid())
-  name      String   @unique // Riunione, Accesso for Work, Evento, etc.
-  hasCost   Boolean  @default(false)
+  name      String   @unique // tassonomia: valore salvato in BookingRequest.type
+  hasCost   Boolean  @default(false) // Costo Sì/No in nuova prenotazione
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CourseType {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String   @unique // tassonomia: valore salvato in Course.courseType
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LessonType {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String   @unique // tassonomia: valore salvato in Lesson.lessonType
   createdAt DateTime @default(now())
-}
-
-model Allergen {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  foods     Food[]     @relation("FoodAllergens")
-  beverages Beverage[] @relation("BeverageAllergens")
-  createdAt DateTime   @default(now())
-}
-
-// 3. Spazi (Spaces)
-model Room {
-  id           String           @id @default(cuid())
-  name         String
-  type         String           // TRAINING, MEETING, MULTI_SPACE
-  availability String           // JSON representing weekly availability & exceptions
-  hourlyCost   Float            @default(0.0) // For Meeting rooms
-  capacity     Int              @default(0)
-  
-  // Relations
-  templateId   String?
-  template     RoomTemplate?    @relation(fields: [templateId], references: [id])
-  tables       Table[]
-  bookings     BookingRequest[]
-  lessons      Lesson[]
-  courses      Course[]
-  events       Event[]
-  reservations TableReservation[]
-  slots        CalendarSlot[]
-  services     RoomService[]
-
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  updatedAt DateTime @updatedAt
 }
 
 model RoomTemplate {
-  id        String   @id @default(cuid())
-  name      String   // Platea, Meeting, etc.
-  type      String   // Associated TemplateType name
-  rooms     Room[]
-  tables    Table[]  @relation("TemplateTables")
-  events    Event[]
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String
+  type            String   @default("Standard") // nome da TemplateType
+  defaultCapacity Int      @default(0)
+  roomId          String?
+  room            Room?    @relation(name: "RoomTemplateRoom", fields: [roomId], references: [id])
+  eventId         String?
+  event           Event?   @relation(fields: [eventId], references: [id])
+  rooms           Room[]   @relation(name: "RoomTemplateRooms")
+  tables          Table[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Table {
-  id               String             @id @default(cuid())
-  identifier       String             // T1, T2, etc.
-  capacity         Int
-  roomId           String
-  room             Room               @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  
-  // Template relation
-  templates        RoomTemplate[]     @relation("TemplateTables")
-  
-  // Merge relation (self M2M)
-  associatedTables Table[]            @relation("TableMerges")
-  mergesWith       Table[]            @relation("TableMerges")
-  
-  reservations     TableReservation[]
-
+  id           String             @id @default(cuid())
+  name         String
+  seats        Int                @default(0)
+  status       String             @default("AVAILABLE") // AVAILABLE, OCCUPIED
+  roomId       String?
+  room         Room?              @relation(fields: [roomId], references: [id])
+  templates    RoomTemplate[]
+  reservations TableReservation[]
   createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  associatedTables Table[]            @relation("TableToTable")
+  associatedTo     Table[]            @relation("TableToTable")
 }
 
 model TechnicalService {
-  id          String        @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
-  status      String        @default("AVAILABLE") // AVAILABLE, MAINTENANCE
-  cost        Float         @default(0.0) // Included in event/meeting cost
+  cost        Float    @default(0)
+  status      String   @default("AVAILABLE") // AVAILABLE, MAINTENANCE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   rooms       RoomService[]
-  events      Event[]       @relation("EventServices")
-  createdAt   DateTime      @default(now())
+  events      EventService[]
 }
 
 model RoomService {
   roomId             String
-  room               Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
   technicalServiceId String
-  technicalService   TechnicalService @relation(fields: [technicalServiceId], references: [id], onDelete: Cascade)
+  room               Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  service            TechnicalService @relation(fields: [technicalServiceId], references: [id], onDelete: Cascade)
 
   @@id([roomId, technicalServiceId])
 }
 
-model BookingRequest {
-  id              String   @id @default(cuid())
-  requester       String   // Name or company name
-  type            String   // From BookingType
-  date            DateTime
-  guests          Int
-  durationMinutes Int
-  endTime         DateTime
-  cost            Float    @default(0.0)
-  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
-  checkedIn       Boolean  @default(false)
-  
-  roomId          String
-  room            Room     @relation(fields: [roomId], references: [id])
-  
-  createdAt       DateTime @default(now())
-}
-
-// 4. Calendario (Calendar)
+// Calendario Globale
 model CalendarSlot {
-  id         String   @id @default(cuid())
-  type       String   // EVENT, MEETING, LESSON
-  startDate  DateTime
-  endDate    DateTime
-  status     String   @default("DRAFT") // DRAFT, PUBLISHED, CANCELLED
-  
-  roomId     String
-  room       Room     @relation(fields: [roomId], references: [id])
-  
-  eventId    String?  @unique
-  event      Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // EVENT, MEETING, LESSON
+  startTime   DateTime
+  endTime     DateTime
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id])
+  status      String   @default("PUBLISHED") // DRAFT, PUBLISHED, CANCELLED
+  event       Event?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-// 5. Formazione (Training)
+// Formazione (Training Manager)
 model Course {
-  id               String             @id @default(cuid())
-  name             String
-  description      String
-  courseType       String             // From CourseType
-  duration         Float              // total hours
-  lessonsCount     Int
-  published        Boolean            @default(false)
-  featured         Boolean            @default(false)
-  weeklyDay        String?            // e.g. Lunedì
-  lessonsRecurring Boolean            @default(false)
-  cost             Float              @default(0.0)
-  maxStudents      Int                @default(15)
-  image            String?            // data URL or external URL
-  
-  teacherId        String?
-  teacher          User?              @relation("TeacherCourses", fields: [teacherId], references: [id])
-  roomId           String?
-  room             Room?              @relation(fields: [roomId], references: [id])
-  
-  lessons          Lesson[]
-  enrollments      CourseEnrollment[]
-  materials        CourseMaterial[]
+  id                    String             @id @default(cuid())
+  title                 String
+  description           String?
+  image                 String?
+  courseType            String?            // nome da CourseType (tassonomia SuperAdmin)
+  startDate             DateTime?
+  endDate               DateTime?
+  lessonCount           Int                @default(0)
+  lessonDurationMinutes Int                @default(0)
+  totalDurationMinutes  Int                @default(0)
+  weeklyDay             String?            // MON, TUE, WED, THU, FRI, SAT, SUN
+  lessonsRecurring      Boolean            @default(true) // false = una sola data di lezione nel calendario
+  timeSlot              String?            // nome da MealTimeSlot
+  roomId                String?
+  room                  Room?              @relation(fields: [roomId], references: [id])
+  cost                  Float              @default(0)
+  maxStudents           Int                @default(0)
+  published             Boolean            @default(false)
+  featured              Boolean            @default(false)
+  enrollmentMode        String             @default("APPLICATION") // APPLICATION, DIRECT
+  links                 String?
+  teacherId             String?
+  teacher               User?              @relation(fields: [teacherId], references: [id])
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  lessons               Lesson[]
+  enrollments           CourseEnrollment[]
+  materials             CourseMaterial[]
+  classes               CourseClass[]
+}
 
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+model CourseClass {
+  id          String             @id @default(cuid())
+  courseId    String
+  course      Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  name        String
+  roomId      String?
+  room        Room?              @relation(fields: [roomId], references: [id])
+  enrollments CourseEnrollment[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 }
 
 model Lesson {
-  id           String             @id @default(cuid())
-  lessonNumber Int
-  description  String?
-  lessonType   String             // From LessonType
-  published    Boolean            @default(false)
-  date         DateTime
-  timeSlot     String?            // From MealTimeSlot (fascia oraria)
-  duration     Int                // in minutes
-  
+  id           String   @id @default(cuid())
+  lessonNumber Int      @default(0) // progressivo nel corso
   courseId     String
-  course       Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  teacherId    String?
-  teacher      User?              @relation("TeacherLessons", fields: [teacherId], references: [id])
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  lessonType   String?  // nome da LessonType (tassonomia SuperAdmin)
+  date         DateTime // data/ora inizio (da data svolgimento + fascia oraria)
+  timeSlot     String?  // nome da MealTimeSlot
+  duration     Int      // in minutes
   roomId       String?
-  room         Room?              @relation(fields: [roomId], references: [id])
-  
-  attendances  LessonAttendance[]
+  room         Room?    @relation(fields: [roomId], references: [id])
+  teacherId    String?
+  teacher      User?    @relation("LessonTeacher", fields: [teacherId], references: [id])
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   materials    CourseMaterial[]
-
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  attendances  LessonAttendance[]
 }
 
 model CourseEnrollment {
   id           String             @id @default(cuid())
-  status       String             @default("PENDING") // PENDING, ACCEPTED, REJECTED
-  cvUrl        String?            // data URL (mock PDF)
-  cvFileName   String?
-  
-  studentName  String?
-  studentEmail String?
-  
-  userId       String?
-  user         User?              @relation(fields: [userId], references: [id])
   courseId     String
-  course       Course             @relation(fields: [courseId], references: [id])
-  
-  attendances  LessonAttendance[]
-
+  course       Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  classId      String?
+  class        CourseClass?       @relation(fields: [classId], references: [id])
+  studentName     String
+  studentEmail    String
+  userId          String?
+  user            User?              @relation(fields: [userId], references: [id])
+  status          String             @default("PENDING") // PENDING, ACCEPTED, REJECTED (UI: Escluso/a)
+  requirementsMet Boolean?
+  applicationMessage String?
+  cvUrl              String?         // URL o data URL (mock upload PDF)
+  cvFileName         String?
+  acceptedPrivacy    Boolean         @default(false)
+  attended     Boolean            @default(false) // legacy: presenza corso intero
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
+  attendances  LessonAttendance[]
 }
 
 model LessonAttendance {
   enrollmentId String
-  enrollment   CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   lessonId     String
+  attended     Boolean          @default(false)
+  enrollment   CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   lesson       Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  present      Boolean          @default(false)
 
   @@id([enrollmentId, lessonId])
 }
 
 model CourseMaterial {
-  id         String   @id @default(cuid())
-  name       String
-  url        String   // data URL or external URL
-  type       String   // PDF, VIDEO, LINK
-  
-  courseId   String?
-  course     Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lessonId   String?
-  lesson     Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  
-  uploaderId String?
-  uploader   User?    @relation("UploaderMaterials", fields: [uploaderId], references: [id])
-
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  courseId     String?
+  course       Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId     String?
+  lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type         String   // PDF, VIDEO, LINK
+  title        String
+  url          String
+  uploadedById String?
+  uploadedBy   User?    @relation("MaterialUploader", fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
-// 6. Ristorazione (Food & Beverage)
+// Ristorazione (Restaurant Manager)
 model Menu {
   id           String             @id @default(cuid())
   name         String
-  dietType     String             // VEGAN, VEGETARIAN, GLUTEN_FREE, standard
-  timeSlot     String             // From MealTimeSlot
+  dietType     String?            // VEGAN, VEGETARIAN, GLUTEN_FREE
+  timeSlot     String?            // nome da MealTimeSlot (es. Colazione, Pranzo)
   image        String?
-  cost         Float              @default(0.0)
-  
-  foods        Food[]             @relation("MenuFoods")
-  beverages    Beverage[]         @relation("MenuBeverages")
-  
-  events       Event[]
+  cost         Float              @default(0)
+  foods        MenuFood[]
+  beverages    MenuBeverage[]
   reservations TableReservation[]
-
+  events       Event[]
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 }
 
-model Food {
-  id          String     @id @default(cuid())
-  name        String
-  ingredients String
-  quantity    Float      @default(0)
-  unit        String     @default("PZ") // KG, L, PZ
-  image       String?
-  cost        Float?
-  
-  menus       Menu[]     @relation("MenuFoods")
-  allergens   Allergen[] @relation("FoodAllergens")
+model Allergen {
+  id        String            @id @default(cuid())
+  name      String            @unique
+  foods     FoodAllergen[]
+  beverages BeverageAllergen[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
 
-  createdAt   DateTime   @default(now())
+model Food {
+  id          String         @id @default(cuid())
+  name        String
+  ingredients String?
+  quantity    Float          @default(0)
+  unit        String         @default("PZ") // KG, L, PZ
+  cost        Float          @default(0)
+  image       String?
+  allergens   FoodAllergen[]
+  menus       MenuFood[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
 model Beverage {
-  id          String     @id @default(cuid())
+  id          String             @id @default(cuid())
   name        String
-  ingredients String
-  quantity    Float      @default(0)
-  unit        String     @default("PZ") // KG, L, PZ
+  ingredients String?
+  quantity    Float              @default(0)
+  unit        String             @default("PZ") // KG, L, PZ
+  cost        Float              @default(0)
   image       String?
-  cost        Float?
-  
-  menus       Menu[]     @relation("MenuBeverages")
-  allergens   Allergen[] @relation("BeverageAllergens")
+  allergens   BeverageAllergen[]
+  menus       MenuBeverage[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
 
-  createdAt   DateTime   @default(now())
+model FoodAllergen {
+  foodId     String
+  allergenId String
+  food       Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  allergen   Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+
+  @@id([foodId, allergenId])
+}
+
+model BeverageAllergen {
+  beverageId String
+  allergenId String
+  beverage   Beverage @relation(fields: [beverageId], references: [id], onDelete: Cascade)
+  allergen   Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+
+  @@id([beverageId, allergenId])
+}
+
+model MenuFood {
+  menuId String
+  foodId String
+  menu   Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  food   Food @relation(fields: [foodId], references: [id], onDelete: Cascade)
+
+  @@id([menuId, foodId])
+}
+
+model MenuBeverage {
+  menuId     String
+  beverageId String
+  menu       Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  beverage   Beverage @relation(fields: [beverageId], references: [id], onDelete: Cascade)
+
+  @@id([menuId, beverageId])
 }
 
 model TableReservation {
   id             String   @id @default(cuid())
+  customerName   String   // cache display da anagrafica utente
+  date           DateTime
+  guests         Int      @default(0)
   status         String   @default("CONFIRMED") // CONFIRMED, SEATED, CANCELLED
   checkedIn      Boolean  @default(false)
-  guests         Int
-  timeSlot       String   // From MealTimeSlot
-  date           DateTime
-  mergedTableIds String?  // JSON string array of IDs of merged tables
-  
-  userId         String?
-  user           User?    @relation(fields: [userId], references: [id])
-  tableId        String?
-  table          Table?   @relation(fields: [tableId], references: [id])
-  menuId         String?
-  menu           Menu?    @relation(fields: [menuId], references: [id])
-  eventId        String?
-  event          Event?   @relation(fields: [eventId], references: [id])
   roomId         String?
   room           Room?    @relation(fields: [roomId], references: [id])
-
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id])
+  timeSlot       String?  // nome da MealTimeSlot
+  eventId        String?
+  event          Event?   @relation(fields: [eventId], references: [id])
+  tableId        String?
+  table          Table?   @relation(fields: [tableId], references: [id])
+  mergedTableIds String?  // JSON array di id tavoli uniti al tavolo principale
+  menuId         String?
+  menu           Menu?    @relation(fields: [menuId], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
-// 7. Eventi
 model Event {
-  id             String             @id @default(cuid())
+  id             String         @id @default(cuid())
   name           String
-  description    String
-  type           String             // Event Type
+  description    String?
+  type           String
   image          String?
-  timeSlot       String             // From MealTimeSlot
+  timeSlot       String?        // nome da MealTimeSlot
   date           DateTime
-  cost           Float              @default(0.0)
+  cost           Float          @default(0)
   notes          String?
-  
+  visibility     String         @default("PUBLIC") // PUBLIC, PRIVATE
   roomId         String?
-  room           Room?              @relation(fields: [roomId], references: [id])
+  room           Room?          @relation(fields: [roomId], references: [id])
   menuId         String?
-  menu           Menu?              @relation(fields: [menuId], references: [id])
-  templateId     String?
-  template       RoomTemplate?      @relation(fields: [templateId], references: [id])
-  
-  calendarSlotId String?
-  calendarSlot   CalendarSlot?
-  
-  services       TechnicalService[] @relation("EventServices")
-  reservations   TableReservation[]
+  menu           Menu?          @relation(fields: [menuId], references: [id])
+  calendarSlotId String?        @unique
+  calendarSlot   CalendarSlot?  @relation(fields: [calendarSlotId], references: [id])
+  services       EventService[]
+  roomTemplates      RoomTemplate[]
+  tableReservations  TableReservation[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
 
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+model EventService {
+  eventId            String
+  technicalServiceId String
+  event              Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  service            TechnicalService @relation(fields: [technicalServiceId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, technicalServiceId])
+}
+
+// Richieste di Prenotazione Spazi
+model BookingRequest {
+  id               String   @id @default(cuid())
+  title            String?  // nome riunione / titolo prenotazione
+  requester        String   // display: azienda o persona (derivato da anagrafica)
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id])
+  guestName        String?
+  guestSurname     String?
+  type             String   // nome da BookingType
+  date             DateTime
+  durationMinutes  Int      @default(60)
+  cost             Float    @default(0)
+  guests           Int      @default(0)
+  status           String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  checkedIn        Boolean  @default(false)
+  roomId           String
+  room             Room     @relation(fields: [roomId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

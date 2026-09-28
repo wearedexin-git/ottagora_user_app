@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProfileForm from "@/components/ProfileForm";
-import Link from "next/link";
+import { Button } from "@/components/ui";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -29,12 +29,9 @@ export default async function ProfilePage() {
             Gestisci le tue informazioni anagrafiche, fiscali e preferenze alimentari.
           </p>
         </div>
-        <Link
-          href="/area-personale"
-          className="text-xs text-zinc-500 hover:text-zinc-800 border border-zinc-200 rounded-xl px-4 py-2.5 bg-white hover:bg-zinc-50 font-bold shadow-sm transition-all cursor-pointer"
-        >
+        <Button href="/area-personale" variant="outline">
           ← Area Personale
-        </Link>
+        </Button>
       </div>
 
       <ProfileForm initialUser={user} />

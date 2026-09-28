@@ -1,8 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { submitCourseApplication } from "@/app/actions/training-actions";
+import { isUserAnagraficaComplete } from "@/lib/user-anagrafica";
+import CourseApplyForm from "@/components/CourseApplyForm";
 import Link from "next/link";
+import { Card } from "@/components/ui";
 
 export default async function ApplyCoursePage({
   params,
@@ -10,92 +12,43 @@ export default async function ApplyCoursePage({
   params: Promise<{ id: string }>;
 }) {
   const session = await auth();
-  if (!session) {
-    redirect("/login");
-  }
+  if (!session) redirect("/login");
 
   const { id } = await params;
 
-  const course = await prisma.course.findUnique({
-    where: { id },
-    include: {
-      teacher: true,
-      room: true,
-    },
-  });
+  const [course, user] = await Promise.all([
+    prisma.course.findFirst({
+      where: { id, published: true },
+      include: { teacher: true, room: true },
+    }),
+    prisma.user.findUnique({ where: { email: session.user?.email ?? "" } }),
+  ]);
 
-  if (!course) {
-    redirect("/courses");
-  }
+  if (!course) redirect("/courses");
+  if (!user || user.role !== "USER") redirect("/login");
 
   return (
     <div className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="glass rounded-3xl p-8 shadow-xl bg-white/50 border-zinc-200/40">
+      <Card padding="lg" className="shadow-xl">
         <div className="mb-6">
-          <Link href="/courses" className="text-xs text-zinc-400 hover:text-amber-600 transition-colors">
+          <Link href="/courses" className="text-xs text-zinc-400 hover:text-primary">
             ← Torna ai corsi
           </Link>
           <h1 className="text-2xl font-extrabold text-zinc-900 mt-2">Candidatura Corso</h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Ti stai candidando per: <strong className="text-zinc-700">{course.name}</strong>
-          </p>
         </div>
 
-        <form action={submitCourseApplication} method="POST" encType="multipart/form-data" className="space-y-6">
-          <input type="hidden" name="courseId" value={course.id} />
+        <CourseApplyForm
+          courseId={course.id}
+          courseTitle={course.title}
+          requiresCv={course.enrollmentMode !== "DIRECT"}
+          anagraficaComplete={isUserAnagraficaComplete(user)}
+        />
 
-          <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-              Carica il tuo Curriculum Vitae (PDF)
-            </label>
-            <div className="mt-1 flex justify-center rounded-2xl border border-dashed border-zinc-200 px-6 py-10 bg-white shadow-sm">
-              <div className="text-center">
-                <div className="mt-4 flex text-sm leading-6 text-zinc-500 justify-center">
-                  <label
-                    htmlFor="cv"
-                    className="relative cursor-pointer rounded-md font-semibold text-amber-600 hover:text-amber-500 focus-within:outline-none"
-                  >
-                    <span>Seleziona un file</span>
-                    <input
-                      id="cv"
-                      name="cv"
-                      type="file"
-                      accept=".pdf"
-                      required
-                      className="sr-only"
-                    />
-                  </label>
-                </div>
-                <p className="text-xs leading-5 text-zinc-400">Solo formato PDF (Max 4MB)</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-zinc-150 pt-4 text-xs text-zinc-500 space-y-2">
-            <div className="flex justify-between">
-              <span>Tipologia:</span>
-              <span className="text-zinc-700 font-semibold">{course.courseType}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Docente:</span>
-              <span className="text-zinc-700 font-semibold">
-                {course.teacher ? `${course.teacher.name} ${course.teacher.surname}` : "Ottagora Team"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Aula:</span>
-              <span className="text-zinc-700 font-semibold">{course.room?.name || "Copernico"}</span>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-3 text-sm font-bold text-white shadow-md hover:brightness-110 transition-all cursor-pointer"
-          >
-            Invia la Candidatura
-          </button>
-        </form>
-      </div>
+        <div className="mt-6 border-t border-zinc-100 pt-4 text-xs text-zinc-500 space-y-1">
+          <p>Docente: {course.teacher ? `${course.teacher.name} ${course.teacher.surname}` : "—"}</p>
+          <p>Aula: {course.room?.name ?? "—"}</p>
+        </div>
+      </Card>
     </div>
   );
 }

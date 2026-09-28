@@ -1,18 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getPublicUpcomingEvents } from "@/lib/events";
 import Link from "next/link";
+import { Card, Button, Badge } from "@/components/ui";
 
 export const revalidate = 0;
 
 export default async function EventsPage() {
-  const events = await prisma.event.findMany({
-    include: {
-      room: true,
-      menu: true,
-    },
-    orderBy: {
-      date: "asc",
-    },
-  });
+  const events = await getPublicUpcomingEvents();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -23,40 +16,52 @@ export default async function EventsPage() {
         <p className="mt-2 text-sm text-zinc-500">
           Partecipa alle nostre serate speciali. Prenota un tavolo per gustare menù esclusivi abbinati.
         </p>
+        <Link
+          href="/quote-request"
+          className="inline-block mt-4 text-xs font-bold text-primary hover:brightness-90"
+        >
+          Richiedi informazioni o re-call per un evento custom →
+        </Link>
       </div>
 
       {events.length === 0 ? (
-        <div className="glass rounded-xl p-12 text-center shadow-sm">
+        <Card padding="none" className="p-12 text-center">
           <p className="text-zinc-500 text-sm">Non ci sono eventi in programma al momento.</p>
-        </div>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
-            <div
+            <Card
               key={event.id}
-              className="glass rounded-2xl overflow-hidden flex flex-col transition-all hover:border-zinc-350 shadow-sm hover:shadow-md bg-white/50"
+              padding="none"
+              className="overflow-hidden flex flex-col hover:border-zinc-300/80 hover:shadow-md transition-all"
             >
               <div className="p-6 flex-1 flex flex-col">
-                <div className="flex items-center justify-between text-[10px] text-amber-600 font-bold uppercase tracking-widest mb-3">
+                <div className="flex items-center justify-between text-[10px] text-primary font-bold uppercase tracking-widest mb-3">
                   <span>{event.type}</span>
-                  <span className="bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                  <Badge variant="primary">
                     {event.cost === 0 ? "Gratuito" : `${event.cost.toFixed(2)}€`}
-                  </span>
+                  </Badge>
                 </div>
-                
+
                 <h3 className="text-lg font-bold text-zinc-900 mb-2 leading-snug">
                   {event.name}
                 </h3>
-                
+
                 <p className="text-zinc-500 text-xs mb-6 flex-1 leading-relaxed">
                   {event.description}
                 </p>
 
-                {/* Event Details */}
                 <div className="border-t border-zinc-100 pt-4 mt-auto space-y-2 text-xs text-zinc-500">
                   <div className="flex justify-between">
                     <span className="font-semibold text-zinc-700">Data:</span>
-                    <span>{new Date(event.date).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</span>
+                    <span>
+                      {new Date(event.date).toLocaleDateString("it-IT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-semibold text-zinc-700">Fascia Oraria:</span>
@@ -71,7 +76,7 @@ export default async function EventsPage() {
                       <span className="font-semibold text-zinc-700">Menù:</span>
                       <Link
                         href={`/menus?selected=${event.menu.id}`}
-                        className="text-xs text-amber-600 hover:text-amber-700 underline font-medium"
+                        className="text-xs text-primary hover:brightness-90 underline font-medium"
                       >
                         {event.menu.name}
                       </Link>
@@ -80,16 +85,12 @@ export default async function EventsPage() {
                 </div>
               </div>
 
-              {/* Action Button */}
               <div className="border-t border-zinc-100 bg-zinc-50/50 p-4">
-                <Link
-                  href={`/events/${event.id}/reserve`}
-                  className="w-full inline-flex items-center justify-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
-                >
+                <Button href={`/events/${event.id}/reserve`} variant="secondary" fullWidth>
                   Prenota un Tavolo
-                </Link>
+                </Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

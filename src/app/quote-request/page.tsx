@@ -1,18 +1,37 @@
 import { submitQuoteRequest } from "@/app/actions/reservation-actions";
 import { auth } from "@/auth";
+import { Card, Button, Alert } from "@/components/ui";
 
-export default async function QuoteRequestPage() {
+export default async function QuoteRequestPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const session = await auth();
+  const { error } = await searchParams;
+
+  const errorMessage =
+    error === "missing"
+      ? "Compila tutti i campi obbligatori."
+      : error === "room"
+        ? "Nessuna sala eventi disponibile al momento."
+        : null;
 
   return (
     <div className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="glass rounded-3xl p-8 shadow-xl bg-white/50 border-zinc-200/40">
+      <Card padding="lg" className="shadow-xl">
         <div className="mb-6">
           <h1 className="text-2xl font-extrabold text-zinc-900">Richiedi Preventivo Evento Custom</h1>
           <p className="text-xs text-zinc-500 mt-1">
             Organizza il tuo evento speciale nel nostro Salone o nelle aule. Compila il modulo per ricevere un preventivo personalizzato o richiedere un recall telefonico.
           </p>
         </div>
+
+        {errorMessage && (
+          <Alert variant="danger" className="mb-4">
+            {errorMessage}
+          </Alert>
+        )}
 
         <form action={submitQuoteRequest} className="space-y-6">
           {!session && (
@@ -25,7 +44,7 @@ export default async function QuoteRequestPage() {
                 name="email"
                 required
                 placeholder="nome@azienda.com"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
               />
             </div>
           )}
@@ -37,7 +56,7 @@ export default async function QuoteRequestPage() {
             <select
               name="eventType"
               required
-              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
             >
               <option value="Conferenza Aziendale">Conferenza / Meeting Aziendale</option>
               <option value="Cena di Gala / Festa">Cena di Gala / Festa Privata</option>
@@ -55,7 +74,7 @@ export default async function QuoteRequestPage() {
                 type="date"
                 name="date"
                 required
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
               />
             </div>
 
@@ -69,7 +88,7 @@ export default async function QuoteRequestPage() {
                 required
                 min={1}
                 placeholder="es. 40"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
               />
             </div>
           </div>
@@ -82,11 +101,11 @@ export default async function QuoteRequestPage() {
               name="notes"
               rows={4}
               placeholder="Descrivi l'evento, gli allestimenti necessari, i servizi tecnici desiderati..."
-              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
             />
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-zinc-150 flex items-center justify-between shadow-sm">
+          <div className="p-4 rounded-xl bg-white border border-zinc-200 flex items-center justify-between shadow-sm">
             <div className="flex-1 pr-4">
               <label htmlFor="recall" className="block text-sm font-semibold text-zinc-800 cursor-pointer">
                 Richiedi Recall Telefonico
@@ -98,18 +117,15 @@ export default async function QuoteRequestPage() {
               id="recall"
               name="recall"
               value="true"
-              className="rounded border-zinc-200 bg-white text-amber-500 focus:ring-0 w-5 h-5 cursor-pointer"
+              className="rounded border-zinc-200 bg-white text-primary focus:ring-0 w-5 h-5 cursor-pointer"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-3.5 text-sm font-bold text-white shadow-md hover:brightness-110 transition-all cursor-pointer"
-          >
+          <Button type="submit" variant="primary" size="lg" fullWidth>
             Invia Richiesta Preventivo
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

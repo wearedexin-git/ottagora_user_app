@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-slate-50/50 text-zinc-900 pb-28">
         <Header />
-        <div className="flex-1 flex flex-col">
+        <div className="page-shell flex-1 flex flex-col min-w-0">
           {children}
         </div>
         <BottomNav />

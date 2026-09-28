@@ -1,0 +1,60 @@
+/**
+ * Design tokens — Ottagora User App.
+ *
+ * Valori PLACEHOLDER in attesa degli asset brand definitivi dal cliente
+ * (3 colori, font, logo, icone SVG). Quando arrivano, si sostituisce SOLO
+ * qui dentro (--brand-1/2/3, --font-heading/--font-body) e l'intera app
+ * si aggiorna di conseguenza: i componenti non referenziano mai i colori
+ * o i font grezzi, solo questi alias semantici.
+ */
+
+:root {
+  --background: #f9f9fb;
+  --foreground: #09090b;
+
+  /* Colori brand del cliente */
+  --brand-orange: #d78550;
+  --brand-brown: #7c4f38;
+  --brand-yellow: #f5da73;
+
+  /* Alias semantici usati dai componenti: non riferirsi mai a --brand-* altrove.
+     - primary: bottoni, link, stati attivi
+     - ink: testo scuro/enfasi, sfondo bottoni secondari, testo leggibile su sfondo primary/10
+     - accent: solo dettagli decorativi ad alto contrasto (pallini, highlight) — il giallo
+       non ha contrasto sufficiente per essere usato come testo su sfondo chiaro */
+  --primary: var(--brand-orange);
+  --ink: var(--brand-brown);
+  --accent: var(--brand-yellow);
+
+  /* Stato (non brand, restano fissi) */
+  --success: #059669;
+  --danger: #dc2626;
+
+  /* Font titoli: Zalando Sans Expanded, locale (vedi fonts.css) */
+  --font-heading: "Zalando Sans Expanded", ui-sans-serif, system-ui, sans-serif;
+  /* Font body: Söhne, locale (vedi fonts.css) */
+  --font-body: "Söhne", ui-sans-serif, system-ui, sans-serif;
+
+  /* Raggio base del pattern UI: un solo valore da ritoccare per irrigidire/ammorbidire tutte le card e i bottoni */
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.333);
+  --radius-3xl: calc(var(--radius) * 2);
+}

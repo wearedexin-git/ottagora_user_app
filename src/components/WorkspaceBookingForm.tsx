@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { submitWorkspaceBooking } from "@/app/actions/reservation-actions";
 import { useRouter } from "next/navigation";
+import { calculateMeetingCost } from "@/lib/room-availability";
+import { Button, Alert } from "@/components/ui";
 
 type MeetingRoom = {
   id: string;
@@ -11,137 +13,135 @@ type MeetingRoom = {
   hourlyCost: number;
 };
 
-export default function WorkspaceBookingForm({ rooms }: { rooms: MeetingRoom[] }) {
+export default function WorkspaceBookingForm({
+  rooms,
+  anagraficaComplete,
+}: {
+  rooms: MeetingRoom[];
+  anagraficaComplete: boolean;
+}) {
   const router = useRouter();
   const [selectedRoomId, setSelectedRoomId] = useState(rooms[0]?.id || "");
-  const [duration, setDuration] = useState(60); // minutes
+  const [duration, setDuration] = useState(60);
   const [date, setDate] = useState("");
   const [guests, setGuests] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingType, setBookingType] = useState<"Riunione" | "Accesso for Work">("Riunione");
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const selectedRoom = rooms.find((r) => r.id === selectedRoomId);
-  const calculatedCost = selectedRoom ? selectedRoom.hourlyCost * (duration / 60) : 0;
+  const calculatedCost =
+    selectedRoom && bookingType === "Riunione"
+      ? calculateMeetingCost(selectedRoom.hourlyCost, duration)
+      : 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedRoomId || !date) return;
+    if (!selectedRoomId || !date || !anagraficaComplete) return;
 
-    setIsSubmitting(true);
     setError(null);
-
-    try {
+    startTransition(async () => {
       const result = await submitWorkspaceBooking({
         roomId: selectedRoomId,
         date,
         guests,
         durationMinutes: duration,
+        bookingType,
       });
-
-      if (result.success) {
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.success) {
         router.push("/area-personale");
       }
-    } catch (err: any) {
-      setError(err.message || "Errore nella prenotazione della sala.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="p-4 rounded-xl bg-red-500/10 text-red-650 border border-red-500/20 text-sm font-semibold">
-          {error}
-        </div>
+      {!anagraficaComplete && (
+        <Alert variant="warning">
+          Completa l&apos;anagrafica nel profilo prima di prenotare una sala.
+        </Alert>
       )}
 
-      {/* Select Room */}
+      {error && <Alert variant="danger">{error}</Alert>}
+
       <div>
-        <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-          Seleziona la Sala Riunione
-        </label>
+        <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Tipo prenotazione</label>
+        <select
+          value={bookingType}
+          onChange={(e) => setBookingType(e.target.value as "Riunione" | "Accesso for Work")}
+          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+        >
+          <option value="Riunione">Sala Riunione</option>
+          <option value="Accesso for Work">Accesso for Work</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Sala</label>
         <select
           value={selectedRoomId}
           onChange={(e) => setSelectedRoomId(e.target.value)}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
         >
           {rooms.map((room) => (
-            <option key={room.id} value={room.id} className="bg-white text-zinc-800">
-              {room.name} (Max {room.capacity} persone - {room.hourlyCost.toFixed(2)}€/ora)
+            <option key={room.id} value={room.id}>
+              {room.name} (max {room.capacity} — {room.hourlyCost.toFixed(2)}€/h)
             </option>
           ))}
         </select>
       </div>
 
-      {/* Date and Time */}
       <div>
-        <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-          Data e Ora Inizio
-        </label>
+        <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Data e ora inizio</label>
         <input
           type="datetime-local"
           required
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+          disabled={!anagraficaComplete}
+          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
         />
       </div>
 
-      {/* Duration & Guests */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-            Durata Prenotazione
-          </label>
+          <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Durata</label>
           <select
             value={duration}
-            onChange={(e) => setDuration(parseInt(e.target.value))}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+            onChange={(e) => setDuration(parseInt(e.target.value, 10))}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
           >
-            <option value={30} className="bg-white text-zinc-800">30 Minuti</option>
-            <option value={60} className="bg-white text-zinc-800">1 Ora</option>
-            <option value={90} className="bg-white text-zinc-800">1 Ora e Mezzo</option>
-            <option value={120} className="bg-white text-zinc-800">2 Ore</option>
-            <option value={180} className="bg-white text-zinc-800">3 Ore</option>
-            <option value={240} className="bg-white text-zinc-800">4 Ore</option>
+            {[30, 60, 90, 120, 180, 240].map((m) => (
+              <option key={m} value={m}>
+                {m} min
+              </option>
+            ))}
           </select>
         </div>
-
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-            Numero Partecipanti
-          </label>
+          <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Partecipanti</label>
           <input
             type="number"
             min={1}
             max={selectedRoom?.capacity || 10}
             required
             value={guests}
-            onChange={(e) => setGuests(parseInt(e.target.value))}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+            onChange={(e) => setGuests(parseInt(e.target.value, 10))}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
           />
         </div>
       </div>
 
-      {/* Real-time price display */}
-      <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 flex justify-between items-center shadow-sm">
-        <div>
-          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Costo Calcolato (Tempo Reale)</p>
-          <p className="text-[10px] text-zinc-500 mt-0.5 font-medium">Tariffa oraria: {selectedRoom?.hourlyCost.toFixed(2)}€/ora</p>
-        </div>
-        <div className="text-2xl font-extrabold text-amber-600">
-          {calculatedCost.toFixed(2)}€
-        </div>
+      <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 flex justify-between items-center">
+        <p className="text-xs text-zinc-500">Preventivo (soggetto ad approvazione)</p>
+        <p className="text-2xl font-extrabold text-primary">{calculatedCost.toFixed(2)}€</p>
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full inline-flex items-center justify-center rounded-xl bg-zinc-900 px-4 py-3.5 text-sm font-bold text-white hover:bg-zinc-800 transition-colors disabled:opacity-50 shadow-md cursor-pointer"
-      >
-        {isSubmitting ? "Prenotazione in corso..." : "Conferma Prenotazione Workspace"}
-      </button>
+      <Button type="submit" variant="secondary" size="lg" fullWidth disabled={!anagraficaComplete || isPending}>
+        {isPending ? "Invio richiesta..." : "Invia Richiesta Prenotazione"}
+      </Button>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card, Button, Badge } from "@/components/ui";
 
 type Allergen = {
   id: string;
@@ -60,15 +61,10 @@ export default function MenusCatalog({
           const isPreselected = menu.id === preselectedMenuId;
 
           return (
-            <div
-              key={menu.id}
-              className={`glass rounded-2xl p-6 flex flex-col transition-all relative bg-white/50 shadow-sm ${
-                isPreselected ? "ring-2 ring-amber-600 border-transparent" : ""
-              }`}
-            >
+            <Card key={menu.id} selected={isPreselected} className="flex flex-col relative">
               {isPreselected && (
-                <span className="absolute -top-3 left-6 rounded-full bg-amber-600 px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wide shadow-sm animate-pulse">
-                  Selezionato per l'evento
+                <span className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wide shadow-sm animate-pulse">
+                  Selezionato per l&apos;evento
                 </span>
               )}
 
@@ -76,15 +72,15 @@ export default function MenusCatalog({
                 <div>
                   <h3 className="text-lg font-bold text-zinc-950">{menu.name}</h3>
                   <div className="flex gap-1.5 mt-1.5">
-                    <span className="text-[10px] font-medium rounded-full bg-zinc-100 px-2.5 py-0.5 text-zinc-500 capitalize">
+                    <Badge variant="neutral" className="capitalize font-medium">
                       {menu.timeSlot}
-                    </span>
-                    <span className="text-[10px] rounded-full bg-amber-500/10 px-2.5 py-0.5 text-amber-600 uppercase font-bold tracking-wider">
+                    </Badge>
+                    <Badge variant="primary" className="uppercase tracking-wider">
                       {menu.dietType === "standard" ? "Standard" : menu.dietType}
-                    </span>
+                    </Badge>
                   </div>
                 </div>
-                <div className="text-lg font-extrabold text-amber-600">
+                <div className="text-lg font-extrabold text-primary">
                   {menu.cost.toFixed(2)}€
                 </div>
               </div>
@@ -108,12 +104,10 @@ export default function MenusCatalog({
                             unit: food.unit,
                           })
                         }
-                        className="w-full text-left p-3.5 rounded-xl bg-white border border-zinc-100/80 hover:border-zinc-300 transition-all flex items-center justify-between shadow-sm"
+                        className="w-full text-left p-3.5 rounded-xl bg-white border border-zinc-100/80 hover:border-zinc-300 transition-all flex items-center justify-between shadow-sm cursor-pointer"
                       >
                         <span className="font-semibold text-xs text-zinc-800">{food.name}</span>
-                        <span className="text-[10px] font-semibold text-amber-600 bg-amber-500/10 px-2 py-1 rounded-md">
-                          Info
-                        </span>
+                        <Badge variant="primary">Info</Badge>
                       </button>
                     ))}
                   </div>
@@ -138,19 +132,17 @@ export default function MenusCatalog({
                               unit: bev.unit,
                             })
                           }
-                          className="w-full text-left p-3.5 rounded-xl bg-white border border-zinc-100/80 hover:border-zinc-300 transition-all flex items-center justify-between shadow-sm"
+                          className="w-full text-left p-3.5 rounded-xl bg-white border border-zinc-100/80 hover:border-zinc-300 transition-all flex items-center justify-between shadow-sm cursor-pointer"
                         >
                           <span className="font-semibold text-xs text-zinc-800">{bev.name}</span>
-                          <span className="text-[10px] font-semibold text-amber-600 bg-amber-500/10 px-2 py-1 rounded-md">
-                            Info
-                          </span>
+                          <Badge variant="primary">Info</Badge>
                         </button>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
@@ -158,10 +150,10 @@ export default function MenusCatalog({
       {/* Modal Dialog for Info on Tap */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="glass max-w-md w-full rounded-3xl p-6 shadow-2xl relative bg-white/95 border border-zinc-200/50 animate-in fade-in zoom-in-95 duration-200">
+          <Card className="max-w-md w-full shadow-2xl relative bg-white/95 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 text-sm font-semibold p-1"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 text-sm font-semibold p-1 cursor-pointer"
             >
               ✕
             </button>
@@ -186,12 +178,9 @@ export default function MenusCatalog({
                   </h4>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {selectedItem.allergens.map((allergen, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[10px] font-semibold bg-red-500/10 text-red-500 border border-red-500/10 px-2.5 py-0.5 rounded-full"
-                      >
+                      <Badge key={idx} variant="danger">
                         ⚠️ {allergen}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -200,7 +189,7 @@ export default function MenusCatalog({
                   <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                     Allergeni
                   </h4>
-                  <p className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                  <p className="text-xs text-success font-semibold flex items-center gap-1">
                     ✓ Nessun allergene dichiarato.
                   </p>
                 </div>
@@ -214,13 +203,10 @@ export default function MenusCatalog({
               </div>
             </div>
 
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="mt-6 w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 py-2.5 text-sm font-bold text-white hover:brightness-110 transition-all shadow-sm cursor-pointer"
-            >
+            <Button variant="primary" fullWidth className="mt-6" onClick={() => setSelectedItem(null)}>
               Chiudi
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       )}
     </div>
