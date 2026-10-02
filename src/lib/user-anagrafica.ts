@@ -1,4 +1,6 @@
 export type UserAnagraficaFields = {
+  /** PRIVATE o COMPANY: per le aziende il campo taxCode può contenere la partita IVA. */
+  userType?: string | null
   name?: string | null
   surname?: string | null
   phone?: string | null
@@ -29,6 +31,8 @@ export type UserAnagraficaFields = {
 }
 
 export type UserAnagraficaInput = {
+  /** PRIVATE o COMPANY: decide se taxCode può essere una partita IVA. */
+  userType?: string
   name: string
   surname: string
   phone: string
@@ -53,10 +57,45 @@ export function normalizeTaxCode(value: string) {
   return value.replace(/\s/g, "").toUpperCase()
 }
 
-export function validateTaxCode(value: string): string | null {
+/**
+ * Partita IVA italiana: 11 cifre, l'ultima è la cifra di controllo (algoritmo ufficiale:
+ * cifre in posizione dispari sommate, in posizione pari raddoppiate e ridotte di 9 se > 9).
+ */
+export function validateVatNumber(value: string): string | null {
+  const vat = normalizeTaxCode(value)
+  if (!/^\d{11}$/.test(vat)) return "La partita IVA deve essere di 11 cifre."
+  let sum = 0
+  for (let i = 0; i < 10; i++) {
+    let digit = Number(vat[i])
+    if (i % 2 === 1) {
+      digit *= 2
+      if (digit > 9) digit -= 9
+    }
+    sum += digit
+  }
+  const check = (10 - (sum % 10)) % 10
+  if (check !== Number(vat[10])) return "Partita IVA non valida: controlla le cifre."
+  return null
+}
+
+/**
+ * Privati: codice fiscale di 16 caratteri.
+ * Aziende: partita IVA di 11 cifre oppure codice fiscale di 16 caratteri (es. ditte individuali).
+ */
+export function validateTaxCode(value: string, userType?: string | null): string | null {
   const cf = normalizeTaxCode(value)
-  if (!cf) return "Il codice fiscale è obbligatorio."
-  if (cf.length !== 16) return "Il codice fiscale deve essere di 16 caratteri."
+  const isCompany = userType === "COMPANY"
+  if (!cf) {
+    return isCompany
+      ? "La partita IVA o il codice fiscale è obbligatorio."
+      : "Il codice fiscale è obbligatorio."
+  }
+  if (isCompany && /^\d+$/.test(cf)) return validateVatNumber(cf)
+  if (cf.length !== 16) {
+    return isCompany
+      ? "Inserisci una partita IVA (11 cifre) o un codice fiscale (16 caratteri)."
+      : "Il codice fiscale deve essere di 16 caratteri."
+  }
   if (!/^[A-Z0-9]{16}$/.test(cf)) {
     return "Formato codice fiscale non valido."
   }
@@ -138,7 +177,7 @@ export function getBillingAddress(user: UserAnagraficaFields) {
 
 export function isUserAnagraficaComplete(user: UserAnagraficaFields) {
   if (!user.name?.trim() || !user.surname?.trim()) return false
-  if (!user.taxCode?.trim() || validateTaxCode(user.taxCode)) return false
+  if (!user.taxCode?.trim() || validateTaxCode(user.taxCode, user.userType)) return false
   if (!user.birthDate) return false
   const country = user.addressCountry?.trim() || "IT"
   if (!user.addressLine1?.trim() || !user.addressCity?.trim()) return false
@@ -155,6 +194,7 @@ export function isUserAnagraficaComplete(user: UserAnagraficaFields) {
 
 export function userToAnagraficaInput(user: UserAnagraficaFields): UserAnagraficaInput {
   return {
+    userType: user.userType ?? undefined,
     name: user.name ?? "",
     surname: user.surname ?? "",
     phone: user.phone ?? "",
@@ -183,7 +223,7 @@ export function validateAnagraficaInput(
   const surname = data.surname.trim()
   if (!name || !surname) return { error: "Nome e cognome sono obbligatori." }
 
-  const taxError = validateTaxCode(data.taxCode)
+  const taxError = validateTaxCode(data.taxCode, data.userType)
   if (taxError) return { error: taxError }
 
   const birthDate = parseBirthDateInput(data.birthDate)

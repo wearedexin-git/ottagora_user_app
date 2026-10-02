@@ -58,6 +58,8 @@ export default function ProfileForm({ initialUser }: { initialUser: ProfileUser 
 
   const handleSubmit = (formData: FormData) => {
     const anagrafica: UserAnagraficaInput = {
+      // Il tipo scelto ora (non quello salvato) decide se accettare la partita IVA.
+      userType,
       name: String(formData.get("name") ?? ""),
       surname: String(formData.get("surname") ?? ""),
       phone: String(formData.get("phone") ?? ""),
@@ -140,7 +142,7 @@ export default function ProfileForm({ initialUser }: { initialUser: ProfileUser 
       !u.name?.trim() && "Nome",
       !u.surname?.trim() && "Cognome",
       !u.birthDate && "Data di nascita",
-      validateTaxCode(u.taxCode ?? "") && "Codice fiscale",
+      validateTaxCode(u.taxCode ?? "", u.userType) && (u.userType === "COMPANY" ? "Partita IVA o codice fiscale" : "Codice fiscale"),
     ].filter((x): x is string => Boolean(x)),
     residence: missingAddress(residence),
     billing: u.billingSameAsResidence === false ? missingAddress(billing) : [],
@@ -245,9 +247,13 @@ export default function ProfileForm({ initialUser }: { initialUser: ProfileUser 
               <input type="tel" name="phone" autoComplete="tel" placeholder="es. 333 123 4567" defaultValue={u.phone ?? ""} className={INPUT} />
             </Field>
             <Field
-              label={isCompany ? "Partita IVA / Codice fiscale" : "Codice fiscale"}
+              label={isCompany ? "Partita IVA o codice fiscale" : "Codice fiscale"}
               required
-              hint="16 caratteri, lettere e numeri."
+              hint={
+                isCompany
+                  ? "Partita IVA di 11 cifre, oppure codice fiscale di 16 caratteri."
+                  : "16 caratteri, lettere e numeri."
+              }
               className="sm:col-span-2"
             >
               <input
