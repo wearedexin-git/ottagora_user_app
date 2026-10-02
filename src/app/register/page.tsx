@@ -37,7 +37,15 @@ export default function RegisterPage() {
             </Alert>
           )}
 
-          <form action={handleSubmit} className="space-y-5">
+          {/* onSubmit invece di action: con action React 19 resetta il form dopo l'invio
+              e in caso di errore l'utente perderebbe quanto inserito. */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(new FormData(e.currentTarget));
+            }}
+            className="space-y-5"
+          >
             <div className="flex gap-2">
               {(["PRIVATE", "COMPANY"] as const).map((t) => (
                 <button

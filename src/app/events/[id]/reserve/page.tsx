@@ -33,7 +33,7 @@ export default async function ReserveTablePage({
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
       <ReserveTableForm
         event={event}
         anagraficaComplete={isUserAnagraficaComplete(user)}

@@ -1,6 +1,7 @@
 import { getPublicUpcomingEvents } from "@/lib/events";
 import Link from "next/link";
-import { Card, Button, Badge } from "@/components/ui";
+import { Card, Button, Badge, EmptyState } from "@/components/ui";
+import { IconArrowRight, IconNavEvents } from "@/components/icons";
 
 export const revalidate = 0;
 
@@ -16,18 +17,35 @@ export default async function EventsPage() {
         <p className="mt-2 text-sm text-zinc-500">
           Partecipa alle nostre serate speciali. Prenota un tavolo per gustare menù esclusivi abbinati.
         </p>
-        <Link
-          href="/quote-request"
-          className="inline-block mt-4 text-xs font-bold text-primary hover:brightness-90"
-        >
-          Richiedi informazioni o re-call per un evento custom →
-        </Link>
+        {events.length > 0 && (
+          <p className="mt-4 text-xs text-zinc-500">
+            Vuoi organizzare un evento privato o aziendale?{" "}
+            <Link
+              href="/quote-request"
+              className="inline-flex items-center gap-1 font-bold text-primary hover:brightness-90"
+            >
+              Richiedi un preventivo <IconArrowRight className="h-3 w-3" />
+            </Link>
+          </p>
+        )}
       </div>
 
       {events.length === 0 ? (
-        <Card padding="none" className="p-12 text-center">
-          <p className="text-zinc-500 text-sm">Non ci sono eventi in programma al momento.</p>
-        </Card>
+        <EmptyState
+          icon={IconNavEvents}
+          title="Nessun evento in programma"
+          description="Stiamo preparando i prossimi appuntamenti. Nel frattempo puoi organizzare un evento su misura per te o per la tua azienda."
+          actions={
+            <>
+              <Button href="/quote-request" variant="primary">
+                Richiedi un preventivo
+              </Button>
+              <Button href="/menus" variant="outline">
+                Scopri i menù
+              </Button>
+            </>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (

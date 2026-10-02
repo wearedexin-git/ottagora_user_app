@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card, Button, Badge } from "@/components/ui";
+import { IconX } from "@/components/icons";
 
 type Allergen = {
   id: string;
@@ -152,10 +153,12 @@ export default function MenusCatalog({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <Card className="max-w-md w-full shadow-2xl relative bg-white/95 animate-in fade-in zoom-in-95 duration-200">
             <button
+              type="button"
               onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 text-sm font-semibold p-1 cursor-pointer"
+              aria-label="Chiudi"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 p-1 cursor-pointer"
             >
-              ✕
+              <IconX className="h-4 w-4" />
             </button>
             <h3 className="text-lg font-bold text-zinc-950 mb-4 pr-6 leading-snug">
               {selectedItem.name}

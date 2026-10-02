@@ -7,15 +7,15 @@ import { Button, Alert } from "@/components/ui";
 
 export default function CourseApplyForm({
   courseId,
-  courseTitle,
-  requiresCv,
+  direct,
   anagraficaComplete,
 }: {
   courseId: string;
-  courseTitle: string;
-  requiresCv: boolean;
+  /** Iscrizione diretta: accettata subito, senza CV né selezione. */
+  direct: boolean;
   anagraficaComplete: boolean;
 }) {
+  const requiresCv = !direct;
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -28,16 +28,23 @@ export default function CourseApplyForm({
   };
 
   return (
-    <form action={handleSubmit} className="space-y-6">
+    // onSubmit invece di action: con action React 19 resetta il form dopo l'invio
+    // e in caso di errore l'utente perderebbe quanto inserito.
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(new FormData(e.currentTarget));
+      }}
+      className="space-y-6"
+    >
       <input type="hidden" name="courseId" value={courseId} />
 
       {!anagraficaComplete && (
         <Alert variant="warning">
-          Completa l&apos;anagrafica nel{" "}
-          <Link href="/area-personale/profile" className="font-bold underline">
-            profilo
-          </Link>{" "}
-          prima di candidarti.
+          {direct ? "Per iscriverti" : "Per candidarti"} devi prima completare i tuoi dati nel profilo.{" "}
+          <Link href="/area-personale/profile" className="font-bold underline underline-offset-2">
+            Completa il profilo
+          </Link>
         </Alert>
       )}
 
@@ -54,7 +61,7 @@ export default function CourseApplyForm({
             accept=".pdf"
             required={requiresCv && anagraficaComplete}
             disabled={!anagraficaComplete || isPending}
-            className="w-full text-sm text-zinc-600"
+            className="w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm text-zinc-600 shadow-sm file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-xs file:font-bold file:text-ink disabled:opacity-50"
           />
         </div>
       )}
@@ -80,15 +87,12 @@ export default function CourseApplyForm({
           disabled={!anagraficaComplete || isPending}
           className="mt-0.5"
         />
-        Accetto il trattamento dei dati personali per la candidatura.
+        Accetto il trattamento dei dati personali per {direct ? "l'iscrizione" : "la candidatura"}.
       </label>
 
-      <p className="text-xs text-zinc-500">
-        Corso: <strong>{courseTitle}</strong>
-      </p>
 
       <Button type="submit" variant="primary" size="lg" fullWidth disabled={!anagraficaComplete || isPending}>
-        {isPending ? "Invio in corso..." : "Invia Candidatura"}
+        {isPending ? "Invio in corso..." : direct ? "Conferma iscrizione" : "Invia candidatura"}
       </Button>
     </form>
   );

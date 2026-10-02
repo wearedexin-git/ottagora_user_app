@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { isUserAnagraficaComplete } from "@/lib/user-anagrafica";
 import WorkspaceBookingForm from "@/components/WorkspaceBookingForm";
-import { Card } from "@/components/ui";
+import { Button, EmptyState, PageHeader } from "@/components/ui";
+import { IconNavWorkspace } from "@/components/icons";
 
 export const revalidate = 0;
 
@@ -24,29 +24,26 @@ export default async function WorkspacePage() {
   });
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:px-8">
-      <Card padding="lg" className="shadow-2xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-zinc-900">Prenota Workspace</h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Sala riunioni o accesso for work. La richiesta sarà in attesa di approvazione.
-          </p>
-          {!isUserAnagraficaComplete(user) && (
-            <Link href="/area-personale/profile" className="text-xs text-primary font-bold mt-2 inline-block">
-              → Completa anagrafica
-            </Link>
-          )}
-        </div>
+    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+      <PageHeader
+        title="Prenota Workspace"
+        description="Prenota una sala riunioni o una postazione di lavoro. Riceverai conferma dopo l'approvazione."
+      />
 
-        {rooms.length === 0 ? (
-          <p className="text-sm text-zinc-500">Nessuna sala disponibile al momento.</p>
-        ) : (
-          <WorkspaceBookingForm
-            rooms={rooms}
-            anagraficaComplete={isUserAnagraficaComplete(user)}
-          />
-        )}
-      </Card>
+      {rooms.length === 0 ? (
+        <EmptyState
+          icon={IconNavWorkspace}
+          title="Nessuna sala disponibile"
+          description="Al momento non ci sono sale prenotabili. Riprova più tardi."
+          actions={
+            <Button href="/" variant="outline">
+              Torna alla dashboard
+            </Button>
+          }
+        />
+      ) : (
+        <WorkspaceBookingForm rooms={rooms} anagraficaComplete={isUserAnagraficaComplete(user)} />
+      )}
     </div>
   );
 }

@@ -110,7 +110,7 @@ export async function submitTableReservation(formData: FormData) {
 
   revalidatePath("/area-personale");
   revalidatePath("/events");
-  redirect("/area-personale");
+  redirect("/area-personale?tab=tavoli");
 }
 
 export async function submitWorkspaceBooking(data: {

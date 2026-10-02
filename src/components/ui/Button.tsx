@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 const BASE =
@@ -14,6 +14,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   outline:
     "rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-sm hover:bg-zinc-50",
   ghost: "rounded-xl text-primary hover:bg-primary/10",
+  danger:
+    "rounded-xl border border-danger/20 bg-danger/5 text-danger shadow-sm hover:bg-danger/10",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

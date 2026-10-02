@@ -116,5 +116,5 @@ export async function submitCourseApplication(formData: FormData) {
 
   revalidatePath("/area-personale");
   revalidatePath("/courses");
-  redirect("/area-personale");
+  redirect("/area-personale?tab=corsi");
 }

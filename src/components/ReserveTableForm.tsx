@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { submitTableReservation } from "@/app/actions/reservation-actions";
-import { Card, Button, Alert } from "@/components/ui";
+import { Button, Alert, PageHeader } from "@/components/ui";
 
 type MenuFood = {
   food: {
@@ -46,25 +46,23 @@ export default function ReserveTableForm({
   };
 
   return (
-    <Card padding="lg" className="shadow-xl">
-      <div className="mb-6">
-        <Link href="/events" className="text-xs text-zinc-400 hover:text-primary transition-colors">
-          ← Torna agli eventi
-        </Link>
-        <h1 className="text-2xl font-extrabold text-zinc-900 mt-2">Prenotazione Tavolo</h1>
-        <p className="text-xs text-zinc-500 mt-1">
-          Stai prenotando per l&apos;evento:{" "}
-          <strong className="text-zinc-700">{event.name}</strong>
-        </p>
-      </div>
+    <>
+      <PageHeader
+        back={{ href: "/events", label: "Torna agli eventi" }}
+        title="Prenotazione tavolo"
+        description={
+          <>
+            Stai prenotando per l&apos;evento <strong className="text-zinc-700">{event.name}</strong>.
+          </>
+        }
+      />
 
       {!anagraficaComplete && (
         <Alert variant="warning" className="mb-6">
-          Completa l&apos;anagrafica nel{" "}
-          <Link href="/area-personale/profile" className="font-bold underline">
-            profilo
-          </Link>{" "}
-          (codice fiscale e indirizzi) prima di prenotare.
+          Per prenotare devi prima completare i tuoi dati nel profilo.{" "}
+          <Link href="/area-personale/profile" className="font-bold underline underline-offset-2">
+            Completa il profilo
+          </Link>
         </Alert>
       )}
 
@@ -74,7 +72,15 @@ export default function ReserveTableForm({
         </Alert>
       )}
 
-      <form action={handleSubmit} className="space-y-6">
+      {/* onSubmit invece di action: con action React 19 resetta il form dopo l'invio
+          e in caso di errore l'utente perderebbe quanto inserito. */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(new FormData(e.currentTarget));
+        }}
+        className="space-y-6"
+      >
         <input type="hidden" name="eventId" value={event.id} />
         <input type="hidden" name="timeSlot" value={event.timeSlot ?? ""} />
 
@@ -118,7 +124,7 @@ export default function ReserveTableForm({
           )}
         </div>
 
-        <div className="border-t border-zinc-150 pt-4 text-xs text-zinc-400 space-y-2">
+        <div className="border-t border-zinc-200/60 pt-4 text-xs text-zinc-400 space-y-2">
           <div className="flex justify-between">
             <span>Data:</span>
             <span className="text-zinc-700 font-semibold">
@@ -151,6 +157,6 @@ export default function ReserveTableForm({
           {isPending ? "Prenotazione in corso..." : "Conferma Prenotazione Tavolo"}
         </Button>
       </form>
-    </Card>
+    </>
   );
 }

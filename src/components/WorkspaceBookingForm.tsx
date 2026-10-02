@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { submitWorkspaceBooking } from "@/app/actions/reservation-actions";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { calculateMeetingCost } from "@/lib/room-availability";
 import { Button, Alert } from "@/components/ui";
 
@@ -51,7 +52,7 @@ export default function WorkspaceBookingForm({
       if (result?.error) {
         setError(result.error);
       } else if (result?.success) {
-        router.push("/area-personale");
+        router.push("/area-personale?tab=workspace");
       }
     });
   };
@@ -60,7 +61,10 @@ export default function WorkspaceBookingForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {!anagraficaComplete && (
         <Alert variant="warning">
-          Completa l&apos;anagrafica nel profilo prima di prenotare una sala.
+          Per prenotare devi prima completare i tuoi dati nel profilo.{" "}
+          <Link href="/area-personale/profile" className="font-bold underline underline-offset-2">
+            Completa il profilo
+          </Link>
         </Alert>
       )}
 
@@ -87,10 +91,15 @@ export default function WorkspaceBookingForm({
         >
           {rooms.map((room) => (
             <option key={room.id} value={room.id}>
-              {room.name} (max {room.capacity} — {room.hourlyCost.toFixed(2)}€/h)
+              {room.name}
             </option>
           ))}
         </select>
+        {selectedRoom && (
+          <p className="mt-2 text-xs text-zinc-500">
+            Fino a {selectedRoom.capacity} persone · {selectedRoom.hourlyCost.toFixed(2)} €/h
+          </p>
+        )}
       </div>
 
       <div>

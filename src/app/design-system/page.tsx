@@ -1,20 +1,16 @@
-import { Button, Card, Badge, Alert } from "@/components/ui";
+import { Button, Card, Badge, Alert, EmptyState } from "@/components/ui";
 import {
   IconArrowRight,
-  IconAward,
   IconBookOpen,
-  IconBriefcase,
-  IconCalendar,
   IconCheckCircle,
   IconClock,
   IconFileText,
-  IconHome,
   IconLogOut,
   IconMapPin,
   IconSettings,
   IconTrendingUp,
-  IconUser,
   IconUsers,
+  IconX,
   IconXCircle,
   IconNavDashboard,
   IconNavEvents,
@@ -38,20 +34,16 @@ export const metadata = {
 
 const icons = [
   { name: "ArrowRight", Icon: IconArrowRight },
-  { name: "Award", Icon: IconAward },
   { name: "BookOpen", Icon: IconBookOpen },
-  { name: "Briefcase", Icon: IconBriefcase },
-  { name: "Calendar", Icon: IconCalendar },
   { name: "CheckCircle", Icon: IconCheckCircle },
   { name: "Clock", Icon: IconClock },
   { name: "FileText", Icon: IconFileText },
-  { name: "Home", Icon: IconHome },
   { name: "LogOut", Icon: IconLogOut },
   { name: "MapPin", Icon: IconMapPin },
   { name: "Settings", Icon: IconSettings },
   { name: "TrendingUp", Icon: IconTrendingUp },
-  { name: "User", Icon: IconUser },
   { name: "Users", Icon: IconUsers },
+  { name: "X", Icon: IconX },
   { name: "XCircle", Icon: IconXCircle },
 ];
 
@@ -90,8 +82,8 @@ export default function DesignSystemPage() {
           Design System Ottagora
         </h1>
         <p className="text-zinc-500 text-sm mt-1 max-w-2xl">
-          I colori sono quelli definitivi del cliente. Font, logo e icone SVG sono ancora PLACEHOLDER
-          in attesa degli asset. Quando arrivano, si aggiornano i token in{" "}
+          Colori, font, logo, icone e pattern sono quelli definitivi del cliente. Per modificarli si
+          aggiornano i token in{" "}
           <code className="text-xs bg-zinc-100 px-1.5 py-0.5 rounded">src/app/theme.css</code> e questa
           pagina (insieme a tutta l&apos;app) si aggiorna da sola.
         </p>
@@ -117,7 +109,7 @@ export default function DesignSystemPage() {
         </Card>
       </Section>
 
-      <Section title="Icone brand (bottom nav)">
+      <Section title="Icone brand">
         <Card>
           <div className="grid grid-cols-5 gap-6">
             {navIcons.map(({ name, Icon }) => (
@@ -130,7 +122,7 @@ export default function DesignSystemPage() {
         </Card>
       </Section>
 
-      <Section title="Icone (lucide, placeholder)">
+      <Section title="Icone di supporto (lucide, solo dove non c'è un'icona brand)">
         <Card>
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-6">
             {icons.map(({ name, Icon }) => (
@@ -150,6 +142,7 @@ export default function DesignSystemPage() {
             <Button variant="secondary">Secondary</Button>
             <Button variant="outline">Outline</Button>
             <Button variant="ghost">Ghost</Button>
+            <Button variant="danger">Danger</Button>
             <Button variant="primary" disabled>
               Disabled
             </Button>
@@ -207,6 +200,31 @@ export default function DesignSystemPage() {
           <Card selected>
             <p className="text-sm font-bold text-zinc-800">Card selezionata</p>
             <p className="text-xs text-zinc-500 mt-1">ring primary</p>
+          </Card>
+        </div>
+      </Section>
+
+      <Section title="Empty state">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <EmptyState
+            icon={IconNavEvents}
+            title="Nessun evento in programma"
+            description="Variante standard, con card: per sezioni libere in pagina."
+            actions={
+              <>
+                <Button variant="primary">Azione principale</Button>
+                <Button variant="outline">Secondaria</Button>
+              </>
+            }
+          />
+          <Card>
+            <EmptyState
+              bare
+              icon={IconNavWorkspace}
+              title="Nessun workspace prenotato"
+              description="Variante bare: dentro una Card già esistente."
+              actions={<Button variant="primary">Azione</Button>}
+            />
           </Card>
         </div>
       </Section>

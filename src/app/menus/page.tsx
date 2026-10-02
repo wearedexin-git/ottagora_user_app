@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import MenusCatalog from "@/components/MenusCatalog";
+import { Button, EmptyState } from "@/components/ui";
+import { IconNavEvents } from "@/components/icons";
 
 export const revalidate = 0;
 
@@ -78,7 +80,20 @@ export default async function MenusPage({
         </p>
       </div>
 
-      <MenusCatalog menus={menus} preselectedMenuId={preselectedMenuId} />
+      {menus.length === 0 ? (
+        <EmptyState
+          icon={IconNavEvents}
+          title="Nessun menù disponibile"
+          description="I nostri menù saranno pubblicati a breve. Nel frattempo scopri gli eventi in programma."
+          actions={
+            <Button href="/events" variant="outline">
+              Scopri gli eventi
+            </Button>
+          }
+        />
+      ) : (
+        <MenusCatalog menus={menus} preselectedMenuId={preselectedMenuId} />
+      )}
     </div>
   );
 }

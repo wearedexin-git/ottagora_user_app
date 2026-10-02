@@ -1,6 +1,6 @@
 import { submitQuoteRequest } from "@/app/actions/reservation-actions";
 import { auth } from "@/auth";
-import { Card, Button, Alert } from "@/components/ui";
+import { Button, Alert, PageHeader } from "@/components/ui";
 
 export default async function QuoteRequestPage({
   searchParams,
@@ -18,14 +18,11 @@ export default async function QuoteRequestPage({
         : null;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:px-8">
-      <Card padding="lg" className="shadow-xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-zinc-900">Richiedi Preventivo Evento Custom</h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Organizza il tuo evento speciale nel nostro Salone o nelle aule. Compila il modulo per ricevere un preventivo personalizzato o richiedere un recall telefonico.
-          </p>
-        </div>
+    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+      <PageHeader
+        title="Richiedi un preventivo"
+        description="Organizza il tuo evento nel nostro Salone o nelle aule. Compila il modulo e ti invieremo un preventivo su misura."
+      />
 
         {errorMessage && (
           <Alert variant="danger" className="mb-4">
@@ -108,7 +105,7 @@ export default async function QuoteRequestPage({
           <div className="p-4 rounded-xl bg-white border border-zinc-200 flex items-center justify-between shadow-sm">
             <div className="flex-1 pr-4">
               <label htmlFor="recall" className="block text-sm font-semibold text-zinc-800 cursor-pointer">
-                Richiedi Recall Telefonico
+                Preferisco essere richiamato
               </label>
               <p className="text-xs text-zinc-500 mt-0.5">Ti richiameremo entro 24 ore lavorative per definire i dettagli.</p>
             </div>
@@ -125,7 +122,6 @@ export default async function QuoteRequestPage({
             Invia Richiesta Preventivo
           </Button>
         </form>
-      </Card>
     </div>
   );
 }

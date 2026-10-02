@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { isUserAnagraficaComplete } from "@/lib/user-anagrafica";
 import CourseApplyForm from "@/components/CourseApplyForm";
-import Link from "next/link";
-import { Card } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
 
 export default async function ApplyCoursePage({
   params,
@@ -27,28 +26,38 @@ export default async function ApplyCoursePage({
   if (!course) redirect("/courses");
   if (!user || user.role !== "USER") redirect("/login");
 
+  const direct = course.enrollmentMode === "DIRECT";
+
   return (
-    <div className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:px-8">
-      <Card padding="lg" className="shadow-xl">
-        <div className="mb-6">
-          <Link href="/courses" className="text-xs text-zinc-400 hover:text-primary">
-            ← Torna ai corsi
-          </Link>
-          <h1 className="text-2xl font-extrabold text-zinc-900 mt-2">Candidatura Corso</h1>
-        </div>
+    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+      <PageHeader
+        back={{ href: "/courses", label: "Torna ai corsi" }}
+        title={direct ? "Iscrizione al corso" : "Candidatura corso"}
+        description={
+          direct ? (
+            <>
+              Ti stai iscrivendo a <strong className="text-zinc-700">{course.title}</strong>. L&apos;iscrizione
+              è immediata, senza selezione.
+            </>
+          ) : (
+            <>
+              Ti stai candidando a <strong className="text-zinc-700">{course.title}</strong>. Riceverai
+              l&apos;esito dopo la valutazione della candidatura.
+            </>
+          )
+        }
+      />
 
-        <CourseApplyForm
-          courseId={course.id}
-          courseTitle={course.title}
-          requiresCv={course.enrollmentMode !== "DIRECT"}
-          anagraficaComplete={isUserAnagraficaComplete(user)}
-        />
+      <CourseApplyForm
+        courseId={course.id}
+        direct={direct}
+        anagraficaComplete={isUserAnagraficaComplete(user)}
+      />
 
-        <div className="mt-6 border-t border-zinc-100 pt-4 text-xs text-zinc-500 space-y-1">
-          <p>Docente: {course.teacher ? `${course.teacher.name} ${course.teacher.surname}` : "—"}</p>
-          <p>Aula: {course.room?.name ?? "—"}</p>
-        </div>
-      </Card>
+      <div className="mt-8 border-t border-zinc-200/60 pt-4 text-xs text-zinc-500 space-y-1">
+        <p>Docente: {course.teacher ? `${course.teacher.name} ${course.teacher.surname}` : "—"}</p>
+        <p>Aula: {course.room?.name ?? "—"}</p>
+      </div>
     </div>
   );
 }

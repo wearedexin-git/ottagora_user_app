@@ -1,51 +1,27 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getPublicUpcomingEvents } from "@/lib/events";
+import { getUpcomingActivities, type UpcomingActivity } from "@/lib/upcoming-activities";
 import Link from "next/link";
-import { IconCalendar, IconBriefcase, IconAward, IconArrowRight } from "@/components/icons";
-import { Card, Button, Badge } from "@/components/ui";
+import { IconArrowRight, IconNavEvents, IconNavWorkspace, IconNavCourses } from "@/components/icons";
+import { Card, Button, Badge, EmptyState } from "@/components/ui";
 
 export const revalidate = 0;
+
+const ACTIVITY_ICONS: Record<UpcomingActivity["kind"], typeof IconNavEvents> = {
+  table: IconNavEvents,
+  workspace: IconNavWorkspace,
+  lesson: IconNavCourses,
+};
 
 export default async function Home() {
   const session = await auth();
 
-  let user = null;
-  let workspaceBookings: Array<{
-    id: string;
-    date: Date;
-    durationMinutes: number;
-    status: string;
-    room: { name: string } | null;
-  }> = [];
+  const user = session?.user?.email
+    ? await prisma.user.findUnique({ where: { email: session.user.email } })
+    : null;
 
-  if (session?.user?.email) {
-    user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        tableReservations: {
-          where: { status: "CONFIRMED" },
-          include: { event: true },
-          take: 2,
-          orderBy: { date: "asc" },
-        },
-        enrollments: {
-          include: { course: true },
-          take: 2,
-          orderBy: { createdAt: "desc" },
-        },
-      },
-    });
-
-    if (user) {
-      workspaceBookings = await prisma.bookingRequest.findMany({
-        where: { userId: user.id },
-        include: { room: true },
-        take: 2,
-        orderBy: { date: "asc" },
-      });
-    }
-  }
+  const activities = user ? await getUpcomingActivities(user.id) : [];
 
   const events = await getPublicUpcomingEvents(3);
 
@@ -86,90 +62,107 @@ export default async function Home() {
       </div>
 
       {user && (
-        <div className="space-y-8 mb-10">
-          <div>
-            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4">
-              Le Tue Attività Attive
+        <div className="space-y-4 mb-10">
+          <div className="flex justify-between items-center gap-4 mb-2">
+            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+              In programma
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {user.tableReservations.map((res) => (
-                <Card key={res.id} padding="sm" className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <IconCalendar className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-zinc-800">Tavolo Prenotato</h3>
-                    <p className="text-xs text-zinc-500 mt-0.5">{res.event?.name}</p>
-                    <div className="flex gap-2 mt-2 text-[10px] text-zinc-400 font-medium">
-                      <span>{new Date(res.date).toLocaleDateString("it-IT")}</span>
-                      <span>•</span>
-                      <span>{res.timeSlot}</span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-
-              {workspaceBookings.map((booking) => (
-                <Card key={booking.id} padding="sm" className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <IconBriefcase className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-zinc-800">Workspace</h3>
-                    <p className="text-xs text-zinc-500 mt-0.5">{booking.room?.name}</p>
-                    <div className="flex gap-2 mt-2 text-[10px] text-zinc-400 font-medium">
-                      <span>{new Date(booking.date).toLocaleDateString("it-IT")}</span>
-                      <span>•</span>
-                      <span>{booking.status}</span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-
-              {user.enrollments.map((enr) => (
-                <Card key={enr.id} padding="sm" className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <IconAward className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-zinc-800">Corso</h3>
-                    <p className="text-xs text-zinc-500 mt-0.5">{enr.course?.title}</p>
-                    <Badge
-                      variant={enr.status === "ACCEPTED" ? "success" : "primary"}
-                      className="mt-2"
-                    >
-                      {enr.status === "ACCEPTED" ? "Iscritto" : "In attesa"}
-                    </Badge>
-                  </div>
-                </Card>
-              ))}
-
-              {user.tableReservations.length === 0 &&
-                workspaceBookings.length === 0 &&
-                user.enrollments.length === 0 && (
-                  <Card padding="lg" className="col-span-2 text-center text-xs text-zinc-400">
-                    Nessuna attività prenotata o candidatura attiva.
-                  </Card>
-                )}
-            </div>
+            {activities.length > 0 && (
+              <Link
+                href="/area-personale"
+                className="text-xs text-primary hover:brightness-90 font-bold inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
+              >
+                Vedi tutte <IconArrowRight className="h-3 w-3" />
+              </Link>
+            )}
           </div>
+
+          {activities.length === 0 ? (
+            <EmptyState
+              icon={IconNavEvents}
+              title="Nessun impegno nei prossimi 7 giorni"
+              description="Prenota uno spazio di lavoro o partecipa a uno dei prossimi eventi."
+              actions={
+                <>
+                  <Button href="/workspace" variant="primary">
+                    Prenota un workspace
+                  </Button>
+                  <Button href="/events" variant="outline">
+                    Scopri gli eventi
+                  </Button>
+                </>
+              }
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {activities.slice(0, 3).map((activity) => {
+                const Icon = ACTIVITY_ICONS[activity.kind];
+                return (
+                  <Card key={activity.id} padding="sm" className="flex items-start gap-4 min-w-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-zinc-800 truncate">{activity.title}</h3>
+                      <p className="text-xs text-zinc-500 mt-0.5 truncate">{activity.subtitle}</p>
+                      <div className="flex gap-2 mt-2 text-[10px] text-zinc-400 font-medium">
+                        <span className="inline-block first-letter:uppercase">
+                          {activity.date.toLocaleDateString("it-IT", {
+                            timeZone: "Europe/Rome",
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </span>
+                        {activity.timeLabel && (
+                          <>
+                            <span>•</span>
+                            <span>{activity.timeLabel}</span>
+                          </>
+                        )}
+                      </div>
+                      {activity.pending && (
+                        <Badge variant="primary" className="mt-2">
+                          In attesa
+                        </Badge>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-center gap-4 mb-2">
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
             Feed Eventi del Momento
           </h2>
-          <Link
-            href="/events"
-            className="text-xs text-primary hover:brightness-90 font-bold inline-flex items-center gap-1"
-          >
-            Vedi tutti <IconArrowRight className="h-3 w-3" />
-          </Link>
+          {events.length > 0 && (
+            <Link
+              href="/events"
+              className="text-xs text-primary hover:brightness-90 font-bold inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
+            >
+              Vedi tutti <IconArrowRight className="h-3 w-3" />
+            </Link>
+          )}
         </div>
 
         <div className="space-y-4">
+          {events.length === 0 && (
+            <EmptyState
+              icon={IconNavEvents}
+              title="Nessun evento in programma"
+              description="Stiamo preparando i prossimi appuntamenti. Nel frattempo puoi organizzare un evento su misura."
+              actions={
+                <Button href="/quote-request" variant="outline">
+                  Richiedi un preventivo
+                </Button>
+              }
+            />
+          )}
           {events.map((event) => (
             <Card
               key={event.id}

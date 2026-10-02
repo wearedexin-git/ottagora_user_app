@@ -1,19 +1,15 @@
 import {
   ArrowRight,
-  Award,
   BookOpen,
-  Briefcase,
-  Calendar,
   CheckCircle2,
   Clock,
   FileText,
-  Home,
   LogOut,
   MapPin,
   Settings,
   TrendingUp,
-  User,
   Users,
+  X,
   XCircle,
   type LucideIcon,
   type LucideProps,
@@ -41,8 +37,9 @@ function createIcon(LucideComponent: LucideIcon) {
   return Icon;
 }
 
-// Iconset brand del cliente (piene, non outline) — solo per la bottom nav per ora,
-// le altre voci sotto restano wrapper lucide placeholder in attesa di ulteriori SVG.
+// Iconset brand del cliente (piene, non outline): da usare SEMPRE per i concetti che
+// coprono (dashboard, eventi/calendario, workspace, corsi, profilo) in tutta l'app.
+// Le voci lucide sotto sono solo per concetti senza un'icona brand equivalente.
 export {
   IconDashboard as IconNavDashboard,
   IconEvents as IconNavEvents,
@@ -52,20 +49,16 @@ export {
 } from "./brand";
 
 export const IconArrowRight = createIcon(ArrowRight);
-export const IconAward = createIcon(Award);
 export const IconBookOpen = createIcon(BookOpen);
-export const IconBriefcase = createIcon(Briefcase);
-export const IconCalendar = createIcon(Calendar);
 export const IconCheckCircle = createIcon(CheckCircle2);
 export const IconClock = createIcon(Clock);
 export const IconFileText = createIcon(FileText);
-export const IconHome = createIcon(Home);
 export const IconLogOut = createIcon(LogOut);
 export const IconMapPin = createIcon(MapPin);
 export const IconSettings = createIcon(Settings);
 export const IconTrendingUp = createIcon(TrendingUp);
-export const IconUser = createIcon(User);
 export const IconUsers = createIcon(Users);
+export const IconX = createIcon(X);
 export const IconXCircle = createIcon(XCircle);
 
 export type { LucideProps as IconProps };
