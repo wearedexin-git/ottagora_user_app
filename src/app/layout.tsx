@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
+import { SelectPickerStyles } from "@/components/SelectPickerStyles";
 
 export const metadata: Metadata = {
   title: "Ottagora - Hub Multidisciplinare",
@@ -23,6 +24,7 @@ export default function RootLayout({
         >
           <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36rem] -translate-x-1/2 rotate-[30deg] bg-primary opacity-15 sm:w-[72.1875rem]" />
         </div>
+        <SelectPickerStyles />
         <Header />
         <div className="page-shell flex-1 flex flex-col min-w-0">
           {children}

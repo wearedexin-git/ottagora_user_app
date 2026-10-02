@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Card, Button, Badge, EmptyState, PageHeader } from "@/components/ui";
 import { IconNavCourses } from "@/components/icons";
+import { formatCost, formatDateShort } from "@/lib/format";
 import CoursesFilters from "@/components/CoursesFilters";
 
 export const revalidate = 0;
@@ -15,10 +16,6 @@ const WEEKDAYS: Record<string, string> = {
   SUN: "domenica",
 };
 
-const EUR = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
-
-const formatDate = (date: Date) =>
-  date.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", day: "numeric", month: "short" });
 
 const normalize = (text: string) =>
   text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -115,7 +112,7 @@ export default async function CoursesPage({
               {
                 label: "Inizio",
                 value: course.startDate
-                  ? `${formatDate(course.startDate)}${weekday ? ` · ogni ${weekday}` : ""}`
+                  ? `${formatDateShort(course.startDate)}${weekday ? ` · ogni ${weekday}` : ""}`
                   : "Da definire",
               },
               {
@@ -149,7 +146,7 @@ export default async function CoursesPage({
                     <span />
                   )}
                   <span className="text-lg font-extrabold text-primary">
-                    {course.cost === 0 ? "Gratuito" : EUR.format(course.cost)}
+                    {formatCost(course.cost)}
                   </span>
                 </div>
 
@@ -186,7 +183,7 @@ export default async function CoursesPage({
                               <div className="min-w-0">
                                 <p className="font-semibold text-zinc-800">{lesson.title}</p>
                                 <p className="text-xs text-zinc-500">
-                                  {formatDate(lesson.date)}
+                                  {formatDateShort(lesson.date)}
                                   {lesson.timeSlot && ` · ${lesson.timeSlot}`} · {lesson.duration} min
                                 </p>
                               </div>

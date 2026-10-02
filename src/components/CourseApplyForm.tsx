@@ -52,8 +52,8 @@ export default function CourseApplyForm({
 
       {requiresCv && (
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-            Curriculum Vitae (PDF) *
+          <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+            Curriculum vitae (PDF)<span className="text-primary"> *</span>
           </label>
           <input
             type="file"
@@ -67,7 +67,7 @@ export default function CourseApplyForm({
       )}
 
       <div>
-        <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
+        <label className="mb-1.5 block text-sm font-medium text-zinc-700">
           Messaggio (opzionale)
         </label>
         <textarea

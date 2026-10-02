@@ -5,6 +5,7 @@ import Link from "next/link";
 import { submitTableReservation } from "@/app/actions/reservation-actions";
 import { Button, Alert, PageHeader } from "@/components/ui";
 import MenuSheet from "@/components/MenuSheet";
+import { formatDateLong, formatEuro } from "@/lib/format";
 import type { MenuDetail } from "@/lib/menu-detail";
 
 type ReserveEvent = {
@@ -77,8 +78,8 @@ export default function ReserveTableForm({
         <input type="hidden" name="timeSlot" value={event.timeSlot ?? ""} />
 
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-            Numero di Persone (Ospiti)
+          <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+            Numero di persone
           </label>
           <select
             name="guests"
@@ -88,22 +89,22 @@ export default function ReserveTableForm({
           >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
               <option key={num} value={num}>
-                {num} {num === 1 ? "Persona" : "Persone"}
+                {num} {num === 1 ? "persona" : "persone"}
               </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-            Menù Abbinato
+          <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+            Menù abbinato
           </label>
           {event.menu ? (
             <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 text-sm">
               <input type="hidden" name="menuId" value={event.menu.id} />
               <div className="flex justify-between font-bold text-zinc-800 mb-1">
                 <span>{event.menu.name}</span>
-                <span className="text-primary">{event.menu.cost.toFixed(2)}€</span>
+                <span className="text-primary">{formatEuro(event.menu.cost)}</span>
               </div>
               <p className="text-xs text-zinc-500">
                 {event.menu.foods.map((f) => f.name).join(", ")}
@@ -119,21 +120,17 @@ export default function ReserveTableForm({
 
         <div className="border-t border-zinc-200/60 pt-4 text-xs text-zinc-400 space-y-2">
           <div className="flex justify-between">
-            <span>Data:</span>
+            <span>Data</span>
             <span className="text-zinc-700 font-semibold">
-              {new Date(event.date).toLocaleDateString("it-IT", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+              {formatDateLong(event.date)}
             </span>
           </div>
           <div className="flex justify-between">
-            <span>Fascia Oraria:</span>
+            <span>Fascia oraria</span>
             <span className="text-zinc-700 font-semibold">{event.timeSlot}</span>
           </div>
           <div className="flex justify-between">
-            <span>Location:</span>
+            <span>Sala</span>
             <span className="text-zinc-700 font-semibold">
               {event.room?.name || "Ottagora"}
             </span>
@@ -142,12 +139,12 @@ export default function ReserveTableForm({
 
         <Button
           type="submit"
-          variant="secondary"
+          variant="primary"
           size="lg"
           fullWidth
           disabled={!anagraficaComplete || !event.menu || isPending}
         >
-          {isPending ? "Prenotazione in corso..." : "Conferma Prenotazione Tavolo"}
+          {isPending ? "Prenotazione in corso..." : "Conferma prenotazione"}
         </Button>
       </form>
     </>

@@ -7,8 +7,10 @@ import {
   IconNavEvents,
   IconNavWorkspace,
 } from "@/components/icons";
-import { Badge, Button, EmptyState, type BadgeVariant } from "@/components/ui";
+import { Button, EmptyState } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { formatDateShort, formatEuro, formatTime } from "@/lib/format";
+import { ActivityRow, type ActivityStatus } from "@/components/ActivityRow";
 
 export type AreaTab = "tavoli" | "workspace" | "corsi";
 
@@ -47,7 +49,7 @@ type Enrollment = {
   } | null;
 };
 
-type Status = { label: string; variant: BadgeVariant };
+type Status = ActivityStatus;
 
 type Row = {
   id: string;
@@ -58,12 +60,6 @@ type Row = {
   extra?: ReactNode;
 };
 
-const TZ = "Europe/Rome";
-const dayFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, day: "numeric" });
-const monthFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, month: "short" });
-const timeFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
-const dateFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, day: "numeric", month: "short" });
-const EUR = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
 
 const formatDuration = (minutes: number) => {
   const h = Math.floor(minutes / 60);
@@ -172,10 +168,10 @@ export function buildAreaData(
       date: b.date,
       title: b.title || b.room?.name || "Workspace",
       details: [
-        timeFmt.format(b.date),
+        formatTime(b.date),
         formatDuration(b.durationMinutes),
         b.title && b.room ? b.room.name : "",
-        b.cost > 0 ? EUR.format(b.cost) : "",
+        b.cost > 0 ? formatEuro(b.cost) : "",
       ].filter(Boolean),
       badge: past && b.status === "APPROVED"
         ? { label: "Conclusa", variant: "neutral" }
@@ -186,11 +182,11 @@ export function buildAreaData(
   function courseRow(e: Enrollment, next: ReturnType<typeof nextLesson>, past: boolean): Row {
     const badge = ENROLLMENT_STATUS[e.status] ?? { label: e.status, variant: "neutral" };
     const details = next
-      ? [`Prossima lezione: ${dateFmt.format(next.date)}${next.timeSlot ? ` · ${next.timeSlot}` : ""}`]
+      ? [`Prossima lezione: ${formatDateShort(next.date)}${next.timeSlot ? ` · ${next.timeSlot}` : ""}`]
       : e.course?.startDate && e.course.startDate.getTime() > now
-        ? [`Inizio: ${dateFmt.format(e.course.startDate)}`]
+        ? [`Inizio: ${formatDateShort(e.course.startDate)}`]
         : [];
-    details.push(`Candidatura del ${dateFmt.format(e.createdAt)}`);
+    details.push(`Candidatura del ${formatDateShort(e.createdAt)}`);
     const materials = e.status === "ACCEPTED" ? (e.course?.materials ?? []) : [];
 
     return {
@@ -324,7 +320,9 @@ export default function DashboardTabs({
         ) : (
           <ul className="space-y-3">
             {upcoming.map((row) => (
-              <ActivityRow key={row.id} row={row} />
+              <ActivityRow key={row.id} date={row.date} title={row.title} details={row.details} status={row.badge}>
+                {row.extra}
+              </ActivityRow>
             ))}
           </ul>
         )}
@@ -343,52 +341,13 @@ export default function DashboardTabs({
           </summary>
           <ul className="mt-3 space-y-3">
             {past.map((row) => (
-              <ActivityRow key={row.id} row={row} muted />
+              <ActivityRow key={row.id} date={row.date} title={row.title} details={row.details} status={row.badge} muted>
+                {row.extra}
+              </ActivityRow>
             ))}
           </ul>
         </details>
       )}
     </div>
-  );
-}
-
-function ActivityRow({ row, muted }: { row: Row; muted?: boolean }) {
-  return (
-    <li className="rounded-2xl border border-zinc-200/70 bg-surface p-4">
-      <div className="flex gap-4">
-        <div
-          className={cn(
-            "flex h-14 w-12 shrink-0 flex-col items-center justify-center rounded-xl",
-            muted ? "bg-zinc-100 text-zinc-500" : "bg-primary/10 text-primary"
-          )}
-          aria-hidden={!row.date}
-        >
-          {row.date ? (
-            <>
-              <span className="text-lg font-extrabold leading-none">{dayFmt.format(row.date)}</span>
-              <span className="mt-1 text-[11px] font-bold uppercase leading-none">
-                {monthFmt.format(row.date).replace(".", "")}
-              </span>
-            </>
-          ) : (
-            <span className="text-lg font-extrabold">—</span>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <p className={cn("font-bold leading-snug", muted ? "text-zinc-600" : "text-zinc-900")}>
-              {row.title}
-            </p>
-            <Badge variant={row.badge.variant} className="shrink-0 px-2.5 py-0.5">
-              {row.badge.label}
-            </Badge>
-          </div>
-          {row.details.length > 0 && (
-            <p className="mt-1 text-sm leading-relaxed text-zinc-500">{row.details.join(" · ")}</p>
-          )}
-        </div>
-      </div>
-      {row.extra}
-    </li>
   );
 }

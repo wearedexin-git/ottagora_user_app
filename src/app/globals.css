@@ -20,6 +20,35 @@ h6,
   font-family: var(--font-heading);
 }
 
+/* Menu a tendina: niente stile di sistema (che sposta il testo e usa una freccia minuscola
+   attaccata al bordo), stessa altezza e stesso allineamento dei campi di testo, freccia
+   disegnata nel colore dei testi secondari (neutral-500). */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  line-height: 1.25rem;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%235b4c45' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  background-size: 1.125rem;
+  cursor: pointer;
+}
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Campi riempiti dall'autocompletamento del browser: niente sfondo azzurro di sistema,
+   restano del colore delle superfici con il testo normale. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+}
+
 /* Superficie semitrasparente sfocata, piatta (senza ombra) */
 .glass {
   background: var(--surface-glass);

@@ -1,18 +1,14 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getPublicUpcomingEvents } from "@/lib/events";
-import { getUpcomingActivities, type UpcomingActivity } from "@/lib/upcoming-activities";
+import { getUpcomingActivities } from "@/lib/upcoming-activities";
+import { ActivityRow } from "@/components/ActivityRow";
+import { EventCard } from "@/components/EventCard";
 import Link from "next/link";
-import { IconArrowRight, IconNavEvents, IconNavWorkspace, IconNavCourses } from "@/components/icons";
-import { Card, Button, Badge, EmptyState } from "@/components/ui";
+import { IconArrowRight, IconNavEvents } from "@/components/icons";
+import { Button, EmptyState } from "@/components/ui";
 
 export const revalidate = 0;
-
-const ACTIVITY_ICONS: Record<UpcomingActivity["kind"], typeof IconNavEvents> = {
-  table: IconNavEvents,
-  workspace: IconNavWorkspace,
-  lesson: IconNavCourses,
-};
 
 export default async function Home() {
   const session = await auth();
@@ -37,7 +33,7 @@ export default async function Home() {
           </div>
         ) : (
           <div className="py-2 sm:py-4">
-            <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Ottagora Hub</span>
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">Ottagora Hub</span>
             <h1 className="text-4xl font-semibold text-zinc-900 mt-1 tracking-tight">Spazio Connesso.</h1>
             <p className="text-zinc-500 text-sm mt-2 max-w-xl">
               Prenota il tuo workspace flessibile, iscriviti a corsi professionali, partecipa a eventi esclusivi e scopri menù d&apos;autore.
@@ -57,15 +53,13 @@ export default async function Home() {
       {user && (
         <div className="space-y-4 mb-8">
           <div className="flex justify-between items-center gap-4 mb-2">
-            <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-              In programma
-            </h2>
+            <h2 className="text-base font-semibold text-zinc-900">In programma</h2>
             {activities.length > 0 && (
               <Link
                 href="/area-personale"
-                className="text-xs text-primary hover:brightness-90 font-bold inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
+                className="text-sm text-primary hover:brightness-90 font-bold inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
               >
-                Vedi tutte <IconArrowRight className="h-3 w-3" />
+                Vedi tutte <IconArrowRight className="h-3.5 w-3.5" />
               </Link>
             )}
           </div>
@@ -87,65 +81,38 @@ export default async function Home() {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {activities.slice(0, 3).map((activity) => {
-                const Icon = ACTIVITY_ICONS[activity.kind];
-                return (
-                  <Card key={activity.id} padding="sm" className="flex items-start gap-4 min-w-0">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-semibold text-zinc-800 truncate">{activity.title}</h3>
-                      <p className="text-xs text-zinc-500 mt-0.5 truncate">{activity.subtitle}</p>
-                      <div className="flex gap-2 mt-2 text-[10px] text-zinc-400 font-medium">
-                        <span className="inline-block first-letter:uppercase">
-                          {activity.date.toLocaleDateString("it-IT", {
-                            timeZone: "Europe/Rome",
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                        {activity.timeLabel && (
-                          <>
-                            <span>•</span>
-                            <span>{activity.timeLabel}</span>
-                          </>
-                        )}
-                      </div>
-                      {activity.pending && (
-                        <Badge variant="primary" className="mt-2">
-                          In attesa
-                        </Badge>
-                      )}
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
+            <ul className="space-y-3">
+              {activities.slice(0, 3).map((activity) => (
+                <ActivityRow
+                  key={activity.id}
+                  date={activity.date}
+                  title={activity.title}
+                  details={[activity.subtitle, activity.timeLabel ?? ""].filter(Boolean)}
+                  status={activity.pending ? { label: "In attesa", variant: "primary" } : undefined}
+                />
+              ))}
+            </ul>
           )}
         </div>
       )}
 
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-4 mb-2">
-          <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-            Feed Eventi del Momento
-          </h2>
+          <h2 className="text-base font-semibold text-zinc-900">Prossimi eventi</h2>
           {events.length > 0 && (
             <Link
               href="/events"
-              className="text-xs text-primary hover:brightness-90 font-bold inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
+              className="text-sm text-primary hover:brightness-90 font-bold inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
             >
-              Vedi tutti <IconArrowRight className="h-3 w-3" />
+              Vedi tutti <IconArrowRight className="h-3.5 w-3.5" />
             </Link>
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {events.length === 0 && (
             <EmptyState
+              className="md:col-span-3"
               icon={IconNavEvents}
               title="Nessun evento in programma"
               description="Stiamo preparando i prossimi appuntamenti. Nel frattempo puoi organizzare un evento su misura."
@@ -157,38 +124,7 @@ export default async function Home() {
             />
           )}
           {events.map((event) => (
-            <Card
-              key={event.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-            >
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Badge variant="primary" className="uppercase tracking-widest">
-                    {event.type}
-                  </Badge>
-                  <Badge variant="neutral">
-                    {event.cost === 0 ? "Gratuito" : `${event.cost.toFixed(2)}€`}
-                  </Badge>
-                </div>
-                <h3 className="text-lg font-semibold text-zinc-900 leading-snug">{event.name}</h3>
-                <p className="text-xs text-zinc-500">{event.description}</p>
-              </div>
-
-              <div className="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center shrink-0 border-t sm:border-t-0 border-zinc-100 pt-4 sm:pt-0 gap-3">
-                <div className="text-left sm:text-right text-xs text-zinc-500">
-                  <p className="font-semibold text-zinc-800">
-                    {new Date(event.date).toLocaleDateString("it-IT", {
-                      day: "numeric",
-                      month: "short",
-                    })}
-                  </p>
-                  <p>{event.timeSlot}</p>
-                </div>
-                <Button href={`/events/${event.id}/reserve`} variant="primary" size="sm">
-                  Prenota
-                </Button>
-              </div>
-            </Card>
+            <EventCard key={event.id} event={{ ...event, menu: null }} compact />
           ))}
         </div>
       </div>

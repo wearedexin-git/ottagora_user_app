@@ -5,8 +5,7 @@ import { IconX } from "@/components/icons";
 import { Badge } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import type { MenuDetail, MenuItemDetail } from "@/lib/menu-detail";
-
-const EUR = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
+import { formatEuro } from "@/lib/format";
 
 /**
  * Link "Vedi menù" che apre il dettaglio del menù di un evento: su mobile un pannello dal
@@ -67,7 +66,7 @@ export default function MenuSheet({
                   {menu.name}
                 </h2>
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                  <span className="text-base font-extrabold text-primary">{EUR.format(menu.cost)}</span>
+                  <span className="text-base font-extrabold text-primary">{formatEuro(menu.cost)}</span>
                   {menu.timeSlot && <Badge className="px-2.5 py-0.5">{menu.timeSlot}</Badge>}
                   {menu.dietType && menu.dietType.toLowerCase() !== "standard" && (
                     <Badge variant="primary" className="px-2.5 py-0.5">

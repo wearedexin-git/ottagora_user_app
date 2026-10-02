@@ -20,6 +20,8 @@
      - accent: solo dettagli decorativi ad alto contrasto (pallini, highlight) — il giallo
        non ha contrasto sufficiente per essere usato come testo su sfondo chiaro */
   --primary: var(--brand-orange);
+  /* Arancio molto chiaro (es. opzione evidenziata nei menu a tendina). */
+  --primary-soft: color-mix(in srgb, var(--brand-orange) 12%, transparent);
   --ink: var(--brand-brown);
   --accent: var(--brand-yellow);
 
@@ -42,7 +44,7 @@
   --surface-glass: color-mix(in srgb, var(--surface) 75%, transparent);
   /* Sfondo della pagina semitrasparente per l'header quando si scorre: lascia intravedere
      (sfocato) il contenuto sotto. In cima alla pagina l'header è del tutto trasparente. */
-  --background-glass: color-mix(in srgb, var(--background) 70%, transparent);
+  --background-glass: color-mix(in srgb, var(--background) 85%, transparent);
 
   /* Neutri per testi, bordi e sfondi tenui, ricavati dal marrone brand.
      Base = marrone brand scurito con il nero: un cioccolato scuro per titoli e testo, che non è

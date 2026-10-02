@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { calculateMeetingCost } from "@/lib/room-availability";
 import { Button, Alert } from "@/components/ui";
+import { formatEuro } from "@/lib/format";
 
 type MeetingRoom = {
   id: string;
@@ -71,19 +72,19 @@ export default function WorkspaceBookingForm({
       {error && <Alert variant="danger">{error}</Alert>}
 
       <div>
-        <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Tipo prenotazione</label>
+        <label className="mb-1.5 block text-sm font-medium text-zinc-700">Tipo prenotazione</label>
         <select
           value={bookingType}
           onChange={(e) => setBookingType(e.target.value as "Riunione" | "Accesso for Work")}
           className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
         >
-          <option value="Riunione">Sala Riunione</option>
-          <option value="Accesso for Work">Accesso for Work</option>
+          <option value="Riunione">Sala riunioni</option>
+          <option value="Accesso for Work">Postazione di lavoro</option>
         </select>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Sala</label>
+        <label className="mb-1.5 block text-sm font-medium text-zinc-700">Sala</label>
         <select
           value={selectedRoomId}
           onChange={(e) => setSelectedRoomId(e.target.value)}
@@ -97,13 +98,13 @@ export default function WorkspaceBookingForm({
         </select>
         {selectedRoom && (
           <p className="mt-2 text-xs text-zinc-500">
-            Fino a {selectedRoom.capacity} persone · {selectedRoom.hourlyCost.toFixed(2)} €/h
+            Fino a {selectedRoom.capacity} persone · {formatEuro(selectedRoom.hourlyCost)}/h
           </p>
         )}
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Data e ora inizio</label>
+        <label className="mb-1.5 block text-sm font-medium text-zinc-700">Data e ora inizio</label>
         <input
           type="datetime-local"
           required
@@ -116,7 +117,7 @@ export default function WorkspaceBookingForm({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Durata</label>
+          <label className="mb-1.5 block text-sm font-medium text-zinc-700">Durata</label>
           <select
             value={duration}
             onChange={(e) => setDuration(parseInt(e.target.value, 10))}
@@ -130,7 +131,7 @@ export default function WorkspaceBookingForm({
           </select>
         </div>
         <div>
-          <label className="block text-xs font-bold text-zinc-400 uppercase mb-2">Partecipanti</label>
+          <label className="mb-1.5 block text-sm font-medium text-zinc-700">Partecipanti</label>
           <input
             type="number"
             min={1}
@@ -145,11 +146,11 @@ export default function WorkspaceBookingForm({
 
       <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 flex justify-between items-center">
         <p className="text-xs text-zinc-500">Preventivo (soggetto ad approvazione)</p>
-        <p className="text-2xl font-extrabold text-primary">{calculatedCost.toFixed(2)}€</p>
+        <p className="text-2xl font-extrabold text-primary">{formatEuro(calculatedCost)}</p>
       </div>
 
-      <Button type="submit" variant="secondary" size="lg" fullWidth disabled={!anagraficaComplete || isPending}>
-        {isPending ? "Invio richiesta..." : "Invia Richiesta Prenotazione"}
+      <Button type="submit" variant="primary" size="lg" fullWidth disabled={!anagraficaComplete || isPending}>
+        {isPending ? "Invio richiesta..." : "Invia richiesta di prenotazione"}
       </Button>
     </form>
   );

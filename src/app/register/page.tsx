@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { registerAction } from "@/app/actions/auth-actions";
-import { Card, Button, Alert } from "@/components/ui";
+import { Card, Button, Alert, PageHeader } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { DiagonalPattern } from "@/components/patterns";
 
@@ -23,13 +23,11 @@ export default function RegisterPage() {
 
   return (
     <div className="relative isolate flex-1 flex flex-col items-center justify-center py-16 px-4">
-      <DiagonalPattern className="absolute inset-0 -z-10 h-full w-full" />
+      {/* Pattern a tutto schermo, anche dietro la barra in alto (che qui mostra il logo bianco). */}
+      <DiagonalPattern className="pointer-events-none fixed inset-0 -z-10 h-full w-full" />
       <div className="w-full max-w-md">
-        <Card padding="lg" >
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-zinc-900">Registrati</h2>
-            <p className="mt-2 text-xs text-zinc-500">Crea il tuo account utente Ottagora.</p>
-          </div>
+        <Card padding="lg" glass={false}>
+          <PageHeader eyebrow="Nuovo account" title="Registrati" description="Crea il tuo account Ottagora." />
 
           {error && (
             <Alert variant="danger" className="mb-6">
@@ -53,10 +51,10 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setUserType(t)}
                   className={cn(
-                    "flex-1 py-2 rounded-xl border text-xs font-bold cursor-pointer",
+                    "flex-1 rounded-xl border px-4 py-3 text-sm font-semibold cursor-pointer transition-all",
                     userType === t
                       ? "border-primary bg-primary/10 text-ink"
-                      : "border-zinc-200 text-zinc-500"
+                      : "border-zinc-200 bg-surface text-zinc-500 hover:bg-zinc-50"
                   )}
                 >
                   {t === "PRIVATE" ? "Privato" : "Azienda"}
@@ -67,24 +65,34 @@ export default function RegisterPage() {
             <input type="hidden" name="userType" value={userType} />
 
             <div className="grid grid-cols-2 gap-3">
-              <input name="name" required placeholder="Nome" className="rounded-xl border border-zinc-200 px-4 py-3 text-sm" />
-              <input name="surname" required placeholder="Cognome" className="rounded-xl border border-zinc-200 px-4 py-3 text-sm" />
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-medium text-zinc-700">Nome</span>
+                <input name="name" required autoComplete="given-name" className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none" />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-medium text-zinc-700">Cognome</span>
+                <input name="surname" required autoComplete="family-name" className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none" />
+              </label>
             </div>
 
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="Email"
-              className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm"
-            />
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-zinc-700">Email</span>
+              <input
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="nome@esempio.it"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none"
+              />
+            </label>
 
             <Button type="submit" variant="primary" size="lg" fullWidth disabled={isPending}>
               {isPending ? "Registrazione..." : "Crea account"}
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-zinc-500">
+          <p className="mt-6 text-center text-sm text-zinc-500">
             Hai già un account?{" "}
             <Link href="/login" className="font-bold text-primary hover:brightness-90">
               Accedi

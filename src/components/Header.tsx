@@ -18,6 +18,8 @@ const NAV_RIGHT = [
 export default function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  // Accesso e registrazione hanno il pattern a tutto schermo: barra sempre trasparente e logo bianco.
+  const onPattern = pathname === "/login" || pathname === "/register";
 
   // Appena si scorre la pagina si attivano lo sfondo glass e la linea di separazione.
   useEffect(() => {
@@ -37,7 +39,11 @@ export default function Header() {
           aria-current={isActive ? "page" : undefined}
           className={cn(
             "text-sm font-medium transition-colors",
-            isActive ? "text-primary font-semibold" : "text-zinc-500 hover:text-zinc-950"
+            onPattern
+              ? "text-white/85 hover:text-white"
+              : isActive
+                ? "text-primary font-semibold"
+                : "text-zinc-500 hover:text-zinc-950"
           )}
         >
           {label}
@@ -50,7 +56,7 @@ export default function Header() {
       className={cn(
         "sticky top-0 z-40 w-full border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300",
         // In cima: nessuno sfondo, la barra non si percepisce. Scorrendo: effetto glass.
-        scrolled
+        scrolled && !onPattern
           ? "border-zinc-200/70 bg-background-glass backdrop-blur-md"
           : "border-transparent bg-transparent"
       )}
@@ -62,7 +68,11 @@ export default function Header() {
 
         <Link href="/" aria-label="Ottagora, vai alla home" className="col-start-2 flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo.svg" alt="Ottagora" className="h-6 w-auto sm:h-7" />
+          <img
+            src="/brand/logo.svg"
+            alt="Ottagora"
+            className={cn("h-6 w-auto sm:h-7", onPattern && "brightness-0 invert")}
+          />
         </Link>
 
         <nav aria-label="Altre sezioni" className="hidden items-center justify-end gap-8 md:flex">

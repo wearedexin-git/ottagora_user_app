@@ -13,6 +13,9 @@ import {
 export default function BottomNav() {
   const pathname = usePathname();
 
+  // Su accesso e registrazione l'utente non è ancora entrato: la navigazione dell'app non serve.
+  if (pathname === "/login" || pathname === "/register") return null;
+
   const navItems = [
     { label: "Dashboard", href: "/", icon: IconNavDashboard },
     { label: "Eventi", href: "/events", icon: IconNavEvents },

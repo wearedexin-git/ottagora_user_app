@@ -1,6 +1,6 @@
 import { loginAction } from "@/app/actions/auth-actions";
 import Link from "next/link";
-import { Card, Button, Alert } from "@/components/ui";
+import { Card, Button, Alert, PageHeader } from "@/components/ui";
 import { DiagonalPattern } from "@/components/patterns";
 
 export default async function LoginPage({
@@ -18,15 +18,11 @@ export default async function LoginPage({
 
   return (
     <div className="relative isolate flex-1 flex flex-col items-center justify-center py-16 px-4">
-      <DiagonalPattern className="absolute inset-0 -z-10 h-full w-full" />
+      {/* Pattern a tutto schermo, anche dietro la barra in alto (che qui mostra il logo bianco). */}
+      <DiagonalPattern className="pointer-events-none fixed inset-0 -z-10 h-full w-full" />
       <div className="w-full max-w-md">
-        <Card padding="lg" >
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-zinc-900 tracking-tight">Accedi a Ottagora</h2>
-            <p className="mt-2 text-xs text-zinc-500 font-medium">
-              Area riservata agli utenti finali.
-            </p>
-          </div>
+        <Card padding="lg" glass={false}>
+          <PageHeader eyebrow="Area riservata" title="Accedi" description="Entra con il tuo account Ottagora." />
 
           {errorMsg && (
             <Alert variant="danger" className="mb-6">
@@ -36,7 +32,7 @@ export default async function LoginPage({
 
           <form action={loginAction} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-xs font-bold text-zinc-400 uppercase mb-2">
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-zinc-700">
                 Email
               </label>
               <input
@@ -45,11 +41,11 @@ export default async function LoginPage({
                 type="email"
                 required
                 placeholder="user@ottagora.com"
-                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-xs font-bold text-zinc-400 uppercase mb-2">
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-zinc-700">
                 Password <span className="font-normal">(mock: qualsiasi)</span>
               </label>
               <input
@@ -57,7 +53,7 @@ export default async function LoginPage({
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none"
               />
             </div>
             <Button type="submit" variant="primary" size="lg" fullWidth>
@@ -65,7 +61,7 @@ export default async function LoginPage({
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-zinc-500">
+          <p className="mt-6 text-center text-sm text-zinc-500">
             Non hai un account?{" "}
             <Link href="/register" className="font-bold text-primary hover:brightness-90">
               Registrati

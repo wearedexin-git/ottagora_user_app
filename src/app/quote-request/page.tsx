@@ -34,8 +34,8 @@ export default async function QuoteRequestPage({
         <form action={submitQuoteRequest} className="space-y-6">
           {!session && (
             <div>
-              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                La tua Email
+              <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+                La tua email
               </label>
               <input
                 type="email"
@@ -48,25 +48,25 @@ export default async function QuoteRequestPage({
           )}
 
           <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-              Tipologia Evento
+            <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+              Tipo di evento
             </label>
             <select
               name="eventType"
               required
               className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all"
             >
-              <option value="Conferenza Aziendale">Conferenza / Meeting Aziendale</option>
-              <option value="Cena di Gala / Festa">Cena di Gala / Festa Privata</option>
-              <option value="Lancio Prodotto">Lancio Prodotto / Showroom</option>
-              <option value="Altro Evento Custom">Altro (Specificare nelle note)</option>
+              <option value="Conferenza Aziendale">Conferenza / meeting aziendale</option>
+              <option value="Cena di Gala / Festa">Cena di gala / festa privata</option>
+              <option value="Lancio Prodotto">Lancio prodotto / showroom</option>
+              <option value="Altro Evento Custom">Altro (specifica nelle note)</option>
             </select>
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                Data Desiderata
+              <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+                Data desiderata
               </label>
               <input
                 type="date"
@@ -77,8 +77,8 @@ export default async function QuoteRequestPage({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                Numero di Ospiti Previsti
+              <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+                Ospiti previsti
               </label>
               <input
                 type="number"
@@ -92,8 +92,8 @@ export default async function QuoteRequestPage({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">
-              Dettagli e Richieste Particolari
+            <label className="mb-1.5 block text-sm font-medium text-zinc-700">
+              Dettagli e richieste particolari
             </label>
             <textarea
               name="notes"
@@ -120,7 +120,7 @@ export default async function QuoteRequestPage({
           </div>
 
           <Button type="submit" variant="primary" size="lg" fullWidth>
-            Invia Richiesta Preventivo
+            Invia richiesta
           </Button>
         </form>
     </div>
