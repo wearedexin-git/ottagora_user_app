@@ -18,8 +18,9 @@ export default async function QuoteRequestPage({
         : null;
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12">
       <PageHeader
+        eyebrow="Eventi su misura"
         title="Richiedi un preventivo"
         description="Organizza il tuo evento nel nostro Salone o nelle aule. Compila il modulo e ti invieremo un preventivo su misura."
       />
@@ -41,7 +42,7 @@ export default async function QuoteRequestPage({
                 name="email"
                 required
                 placeholder="nome@azienda.com"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all"
               />
             </div>
           )}
@@ -53,7 +54,7 @@ export default async function QuoteRequestPage({
             <select
               name="eventType"
               required
-              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
+              className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all"
             >
               <option value="Conferenza Aziendale">Conferenza / Meeting Aziendale</option>
               <option value="Cena di Gala / Festa">Cena di Gala / Festa Privata</option>
@@ -71,7 +72,7 @@ export default async function QuoteRequestPage({
                 type="date"
                 name="date"
                 required
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all"
               />
             </div>
 
@@ -85,7 +86,7 @@ export default async function QuoteRequestPage({
                 required
                 min={1}
                 placeholder="es. 40"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all"
               />
             </div>
           </div>
@@ -98,11 +99,11 @@ export default async function QuoteRequestPage({
               name="notes"
               rows={4}
               placeholder="Descrivi l'evento, gli allestimenti necessari, i servizi tecnici desiderati..."
-              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all shadow-sm"
+              className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 placeholder-zinc-400 text-sm focus:outline-none focus:border-primary transition-all"
             />
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-zinc-200 flex items-center justify-between shadow-sm">
+          <div className="p-4 rounded-xl bg-surface border border-zinc-200 flex items-center justify-between">
             <div className="flex-1 pr-4">
               <label htmlFor="recall" className="block text-sm font-semibold text-zinc-800 cursor-pointer">
                 Preferisco essere richiamato
@@ -114,7 +115,7 @@ export default async function QuoteRequestPage({
               id="recall"
               name="recall"
               value="true"
-              className="rounded border-zinc-200 bg-white text-primary focus:ring-0 w-5 h-5 cursor-pointer"
+              className="rounded border-zinc-200 bg-surface text-primary focus:ring-0 w-5 h-5 cursor-pointer"
             />
           </div>
 

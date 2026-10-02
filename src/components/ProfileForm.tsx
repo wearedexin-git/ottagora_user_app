@@ -212,8 +212,8 @@ export default function ProfileForm({ initialUser }: { initialUser: ProfileUser 
               className={cn(
                 "rounded-xl border px-4 py-3 text-sm font-semibold transition-all cursor-pointer",
                 userType === t
-                  ? "border-primary bg-primary/10 text-ink shadow-sm"
-                  : "border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50"
+                  ? "border-primary bg-primary/10 text-ink"
+                  : "border-zinc-200 bg-surface text-zinc-500 hover:bg-zinc-50"
               )}
             >
               {t === "PRIVATE" ? "Privato" : "Azienda"}
@@ -369,7 +369,7 @@ export default function ProfileForm({ initialUser }: { initialUser: ProfileUser 
       {(dirty || isPending || message) && (
         <div className="sticky bottom-28 z-30 space-y-2 pt-2">
           {message && (
-            <Alert variant={message.type} className="font-semibold shadow-sm">
+            <Alert variant={message.type} className="font-semibold">
               {message.text}
             </Alert>
           )}
@@ -417,7 +417,7 @@ function ProfileSection({
     <section
       data-section={id}
       className={cn(
-        "rounded-2xl border bg-white shadow-sm transition-colors",
+        "rounded-2xl border bg-surface transition-colors",
         incomplete ? "border-primary/40" : "border-zinc-200/70"
       )}
     >
@@ -449,7 +449,7 @@ function ProfileSection({
 }
 
 const INPUT =
-  "w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-800 shadow-sm transition-all placeholder:text-zinc-400 focus:border-primary focus:outline-none";
+  "w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm text-zinc-800 transition-all placeholder:text-zinc-400 focus:border-primary focus:outline-none";
 
 function Field({
   label,

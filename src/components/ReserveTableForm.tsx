@@ -4,12 +4,8 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { submitTableReservation } from "@/app/actions/reservation-actions";
 import { Button, Alert, PageHeader } from "@/components/ui";
-
-type MenuFood = {
-  food: {
-    name: string;
-  };
-};
+import MenuSheet from "@/components/MenuSheet";
+import type { MenuDetail } from "@/lib/menu-detail";
 
 type ReserveEvent = {
   id: string;
@@ -17,12 +13,7 @@ type ReserveEvent = {
   date: Date | string;
   timeSlot: string | null;
   room: { name: string } | null;
-  menu: {
-    id: string;
-    name: string;
-    cost: number;
-    foods: MenuFood[];
-  } | null;
+  menu: MenuDetail | null;
 };
 
 export default function ReserveTableForm({
@@ -48,8 +39,9 @@ export default function ReserveTableForm({
   return (
     <>
       <PageHeader
-        back={{ href: "/events", label: "Torna agli eventi" }}
-        title="Prenotazione tavolo"
+        eyebrow="Eventi"
+        backHref="/events"
+        title="Prenota un tavolo"
         description={
           <>
             Stai prenotando per l&apos;evento <strong className="text-zinc-700">{event.name}</strong>.
@@ -92,7 +84,7 @@ export default function ReserveTableForm({
             name="guests"
             required
             disabled={!anagraficaComplete || isPending}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all shadow-sm disabled:opacity-50"
+            className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-zinc-800 text-sm focus:outline-none focus:border-primary transition-all disabled:opacity-50"
           >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
               <option key={num} value={num}>
@@ -107,15 +99,16 @@ export default function ReserveTableForm({
             Menù Abbinato
           </label>
           {event.menu ? (
-            <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 text-sm shadow-sm">
+            <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 text-sm">
               <input type="hidden" name="menuId" value={event.menu.id} />
               <div className="flex justify-between font-bold text-zinc-800 mb-1">
                 <span>{event.menu.name}</span>
                 <span className="text-primary">{event.menu.cost.toFixed(2)}€</span>
               </div>
               <p className="text-xs text-zinc-500">
-                Composto da: {event.menu.foods.map((f) => f.food.name).join(", ")}
+                {event.menu.foods.map((f) => f.name).join(", ")}
               </p>
+              <MenuSheet menu={event.menu} label="Vedi piatti e allergeni" className="mt-2 text-xs" />
             </div>
           ) : (
             <p className="text-xs text-danger">

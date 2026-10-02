@@ -24,9 +24,10 @@ export default async function WorkspacePage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12">
       <PageHeader
-        title="Prenota Workspace"
+        eyebrow="Workspace"
+        title="Prenota"
         description="Prenota una sala riunioni o una postazione di lavoro. Riceverai conferma dopo l'approvazione."
       />
 

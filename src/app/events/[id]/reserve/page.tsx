@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getPublicEventById } from "@/lib/events";
 import { isUserAnagraficaComplete } from "@/lib/user-anagrafica";
 import ReserveTableForm from "@/components/ReserveTableForm";
+import { toMenuDetail } from "@/lib/menu-detail";
 
 export const revalidate = 0;
 
@@ -33,9 +34,9 @@ export default async function ReserveTablePage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12">
       <ReserveTableForm
-        event={event}
+        event={{ ...event, menu: event.menu ? toMenuDetail(event.menu) : null }}
         anagraficaComplete={isUserAnagraficaComplete(user)}
       />
     </div>

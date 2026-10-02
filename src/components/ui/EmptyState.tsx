@@ -24,10 +24,10 @@ export function EmptyState({
 }: EmptyStateProps) {
   const content = (
     <>
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <Icon className="h-6 w-6" />
       </div>
-      <h3 className="mt-4 text-base font-bold text-zinc-900">{title}</h3>
+      <h3 className="mt-4 text-base font-semibold text-zinc-900">{title}</h3>
       {description && <p className="mt-1 max-w-xs text-sm text-zinc-500">{description}</p>}
       {actions && (
         <div className="mt-5 flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">

@@ -3,27 +3,33 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export type PageHeaderProps = {
-  title: string;
+  /** Etichetta arancio in maiuscolo sopra il titolo (es. "Eventi"). */
+  eyebrow: string;
+  title: ReactNode;
   description?: ReactNode;
-  /** Link "indietro" mostrato sopra il titolo. */
-  back?: { href: string; label: string };
+  /** Se presente, l'etichetta diventa un link "indietro" verso questa pagina. */
+  backHref?: string;
+  /** Contenuto extra sotto il titolo (es. un link d'azione). */
+  children?: ReactNode;
   className?: string;
 };
 
-/** Intestazione delle pagine dedicate a un form (prenotazioni, candidature, profilo). */
-export function PageHeader({ title, description, back, className }: PageHeaderProps) {
+const EYEBROW = "text-xs font-bold uppercase tracking-widest text-primary";
+
+/** Intestazione di pagina: etichetta arancio + titolo grande, come in home ("Dashboard / Ciao, …"). */
+export function PageHeader({ eyebrow, title, description, backHref, children, className }: PageHeaderProps) {
   return (
-    <div className={cn("mb-8", className)}>
-      {back && (
-        <Link
-          href={back.href}
-          className="mb-3 inline-block text-xs font-semibold text-zinc-400 transition-colors hover:text-primary"
-        >
-          ← {back.label}
+    <div className={cn("mb-6", className)}>
+      {backHref ? (
+        <Link href={backHref} className={cn(EYEBROW, "inline-block transition-opacity hover:opacity-80")}>
+          ← {eyebrow}
         </Link>
+      ) : (
+        <span className={EYEBROW}>{eyebrow}</span>
       )}
-      <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900">{title}</h1>
+      <h1 className="mt-1 text-3xl font-semibold tracking-tight text-zinc-900">{title}</h1>
       {description && <p className="mt-2 text-sm text-zinc-500">{description}</p>}
+      {children}
     </div>
   );
 }

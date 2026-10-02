@@ -23,7 +23,7 @@ export default function BottomNav() {
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2.5rem)] max-w-lg">
-      <div className="glass rounded-full px-6 py-3 shadow-xl flex justify-between items-center backdrop-blur-xl border border-zinc-200/40 bg-white/70">
+      <div className="glass rounded-2xl px-6 py-3 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.18)] flex justify-between items-center backdrop-blur-xl border border-zinc-200/40 bg-surface/70">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));

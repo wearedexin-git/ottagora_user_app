@@ -20,17 +20,12 @@ h6,
   font-family: var(--font-heading);
 }
 
-/* Apple-style Light Glassmorphism */
+/* Superficie semitrasparente sfocata, piatta (senza ombra) */
 .glass {
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--surface-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
-}
-
-.glass-glow {
-  box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 /* Ogni pagina è figlio diretto di un flex-col (vedi layout.tsx): senza questo, un

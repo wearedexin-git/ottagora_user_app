@@ -20,9 +20,9 @@ export default async function LoginPage({
     <div className="relative isolate flex-1 flex flex-col items-center justify-center py-16 px-4">
       <DiagonalPattern className="absolute inset-0 -z-10 h-full w-full" />
       <div className="w-full max-w-md">
-        <Card padding="lg" className="shadow-xl">
+        <Card padding="lg" >
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">Accedi a Ottagora</h2>
+            <h2 className="text-2xl font-semibold text-zinc-900 tracking-tight">Accedi a Ottagora</h2>
             <p className="mt-2 text-xs text-zinc-500 font-medium">
               Area riservata agli utenti finali.
             </p>
@@ -45,7 +45,7 @@ export default async function LoginPage({
                 type="email"
                 required
                 placeholder="user@ottagora.com"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
               />
             </div>
             <div>
@@ -57,7 +57,7 @@ export default async function LoginPage({
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+                className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
               />
             </div>
             <Button type="submit" variant="primary" size="lg" fullWidth>
@@ -72,7 +72,7 @@ export default async function LoginPage({
             </Link>
           </p>
 
-          <div className="mt-6 pt-6 border-t border-zinc-150 text-center">
+          <div className="mt-6 pt-6 border-t border-zinc-100 text-center">
             <form action={loginAction}>
               <input type="hidden" name="email" value="user@ottagora.com" />
               <button

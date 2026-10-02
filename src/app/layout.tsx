@@ -15,7 +15,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it" className="h-full antialiased">
-      <body className="min-h-full flex flex-col text-foreground pb-28">
+      <body className="relative isolate min-h-full flex flex-col text-foreground pb-28">
+        {/* Sfumatura arancio decorativa in cima a ogni pagina (dietro header e contenuto). */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 -top-24 -z-10 transform-gpu overflow-hidden blur-3xl"
+        >
+          <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36rem] -translate-x-1/2 rotate-[30deg] bg-primary opacity-15 sm:w-[72.1875rem]" />
+        </div>
         <Header />
         <div className="page-shell flex-1 flex flex-col min-w-0">
           {children}

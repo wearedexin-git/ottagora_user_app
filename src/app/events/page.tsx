@@ -1,7 +1,9 @@
 import { getPublicUpcomingEvents } from "@/lib/events";
 import Link from "next/link";
-import { Card, Button, Badge, EmptyState } from "@/components/ui";
+import { Card, Button, Badge, EmptyState, PageHeader } from "@/components/ui";
 import { IconArrowRight, IconNavEvents } from "@/components/icons";
+import MenuSheet from "@/components/MenuSheet";
+import { toMenuDetail } from "@/lib/menu-detail";
 
 export const revalidate = 0;
 
@@ -9,16 +11,10 @@ export default async function EventsPage() {
   const events = await getPublicUpcomingEvents();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="border-b border-zinc-200/50 pb-6 mb-10">
-        <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl">
-          Eventi in Programma
-        </h1>
-        <p className="mt-2 text-sm text-zinc-500">
-          Partecipa alle nostre serate speciali. Prenota un tavolo per gustare menù esclusivi abbinati.
-        </p>
+    <div className="mx-auto max-w-7xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12 lg:px-8">
+      <PageHeader eyebrow="Eventi" title="In programma">
         {events.length > 0 && (
-          <p className="mt-4 text-xs text-zinc-500">
+          <p className="mt-3 text-xs text-zinc-500">
             Vuoi organizzare un evento privato o aziendale?{" "}
             <Link
               href="/quote-request"
@@ -28,7 +24,7 @@ export default async function EventsPage() {
             </Link>
           </p>
         )}
-      </div>
+      </PageHeader>
 
       {events.length === 0 ? (
         <EmptyState
@@ -36,14 +32,9 @@ export default async function EventsPage() {
           title="Nessun evento in programma"
           description="Stiamo preparando i prossimi appuntamenti. Nel frattempo puoi organizzare un evento su misura per te o per la tua azienda."
           actions={
-            <>
-              <Button href="/quote-request" variant="primary">
-                Richiedi un preventivo
-              </Button>
-              <Button href="/menus" variant="outline">
-                Scopri i menù
-              </Button>
-            </>
+            <Button href="/quote-request" variant="primary">
+              Richiedi un preventivo
+            </Button>
           }
         />
       ) : (
@@ -52,7 +43,7 @@ export default async function EventsPage() {
             <Card
               key={event.id}
               padding="none"
-              className="overflow-hidden flex flex-col hover:border-zinc-300/80 hover:shadow-md transition-all"
+              className="overflow-hidden flex flex-col hover:border-zinc-300/80 transition-all"
             >
               <div className="p-6 flex-1 flex flex-col">
                 <div className="flex items-center justify-between text-[10px] text-primary font-bold uppercase tracking-widest mb-3">
@@ -62,7 +53,7 @@ export default async function EventsPage() {
                   </Badge>
                 </div>
 
-                <h3 className="text-lg font-bold text-zinc-900 mb-2 leading-snug">
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2 leading-snug">
                   {event.name}
                 </h3>
 
@@ -90,14 +81,12 @@ export default async function EventsPage() {
                     <span>{event.room?.name || "Salone Ottagora"}</span>
                   </div>
                   {event.menu && (
-                    <div className="flex justify-between items-center pt-1.5">
+                    <div className="flex justify-between items-center gap-3 pt-1.5">
                       <span className="font-semibold text-zinc-700">Menù:</span>
-                      <Link
-                        href={`/menus?selected=${event.menu.id}`}
-                        className="text-xs text-primary hover:brightness-90 underline font-medium"
-                      >
-                        {event.menu.name}
-                      </Link>
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="truncate">{event.menu.name}</span>
+                        <MenuSheet menu={toMenuDetail(event.menu)} label="Vedi" className="shrink-0 underline underline-offset-2" />
+                      </span>
                     </div>
                   )}
                 </div>

@@ -75,7 +75,7 @@ export default function WorkspaceBookingForm({
         <select
           value={bookingType}
           onChange={(e) => setBookingType(e.target.value as "Riunione" | "Accesso for Work")}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+          className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
         >
           <option value="Riunione">Sala Riunione</option>
           <option value="Accesso for Work">Accesso for Work</option>
@@ -87,7 +87,7 @@ export default function WorkspaceBookingForm({
         <select
           value={selectedRoomId}
           onChange={(e) => setSelectedRoomId(e.target.value)}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+          className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
         >
           {rooms.map((room) => (
             <option key={room.id} value={room.id}>
@@ -110,7 +110,7 @@ export default function WorkspaceBookingForm({
           value={date}
           onChange={(e) => setDate(e.target.value)}
           disabled={!anagraficaComplete}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+          className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
         />
       </div>
 
@@ -120,7 +120,7 @@ export default function WorkspaceBookingForm({
           <select
             value={duration}
             onChange={(e) => setDuration(parseInt(e.target.value, 10))}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
           >
             {[30, 60, 90, 120, 180, 240].map((m) => (
               <option key={m} value={m}>
@@ -138,7 +138,7 @@ export default function WorkspaceBookingForm({
             required
             value={guests}
             onChange={(e) => setGuests(parseInt(e.target.value, 10))}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
           />
         </div>
       </div>

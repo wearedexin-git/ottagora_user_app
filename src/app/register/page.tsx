@@ -25,9 +25,9 @@ export default function RegisterPage() {
     <div className="relative isolate flex-1 flex flex-col items-center justify-center py-16 px-4">
       <DiagonalPattern className="absolute inset-0 -z-10 h-full w-full" />
       <div className="w-full max-w-md">
-        <Card padding="lg" className="shadow-xl">
+        <Card padding="lg" >
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-extrabold text-zinc-900">Registrati</h2>
+            <h2 className="text-2xl font-semibold text-zinc-900">Registrati</h2>
             <p className="mt-2 text-xs text-zinc-500">Crea il tuo account utente Ottagora.</p>
           </div>
 

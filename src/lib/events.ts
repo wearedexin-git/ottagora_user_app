@@ -1,17 +1,10 @@
 import { startOfDay } from "date-fns";
 import { prisma } from "@/lib/prisma";
+import { menuDetailInclude } from "@/lib/menu-detail";
 
 const eventListInclude = {
   room: { select: { id: true, name: true } },
-  menu: {
-    select: {
-      id: true,
-      name: true,
-      cost: true,
-      dietType: true,
-      timeSlot: true,
-    },
-  },
+  menu: { include: menuDetailInclude },
 } as const;
 
 export async function getPublicUpcomingEvents(limit?: number) {
@@ -39,24 +32,7 @@ export async function getPublicEventById(eventId: string) {
     },
     include: {
       room: true,
-      menu: {
-        include: {
-          foods: {
-            include: {
-              food: {
-                include: {
-                  allergens: { include: { allergen: true } },
-                },
-              },
-            },
-          },
-          beverages: {
-            include: {
-              beverage: true,
-            },
-          },
-        },
-      },
+      menu: { include: menuDetailInclude },
     },
   });
 }

@@ -76,7 +76,7 @@ export default function CoursesFilters({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Cerca per titolo, argomento o docente"
-          className="w-full rounded-xl border border-zinc-200 bg-white py-3 pl-4 pr-11 text-sm text-zinc-800 shadow-sm placeholder:text-zinc-400 focus:border-primary focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+          className="w-full rounded-xl border border-zinc-200 bg-surface py-3 pl-4 pr-11 text-sm text-zinc-800 placeholder:text-zinc-400 focus:border-primary focus:outline-none [&::-webkit-search-cancel-button]:hidden"
         />
         {query && (
           <button
@@ -104,10 +104,10 @@ export default function CoursesFilters({
               navigate({ q: query, ...(chip.active ? { tipo: "", prezzo: "" } : chip.filters) })
             }
             className={cn(
-              "shrink-0 cursor-pointer whitespace-nowrap rounded-full border px-4 py-2 text-xs font-bold transition-colors",
+              "shrink-0 cursor-pointer whitespace-nowrap rounded-lg border px-4 py-2 text-xs font-bold transition-colors",
               chip.active
-                ? "border-primary bg-primary text-white shadow-sm"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900"
+                ? "border-primary bg-primary text-white"
+                : "border-zinc-200 bg-surface text-zinc-600 hover:border-zinc-300 hover:text-zinc-900"
             )}
           >
             {chip.label}

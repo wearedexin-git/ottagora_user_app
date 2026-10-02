@@ -26,26 +26,19 @@ export default async function Home() {
   const events = await getPublicUpcomingEvents(3);
 
   return (
-    <div className="relative isolate flex-1 flex flex-col justify-start py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
-        <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36rem] -translate-x-1/2 rotate-[30deg] bg-primary opacity-15 sm:w-[72.1875rem]"></div>
-      </div>
-
-      <div className="mb-10 text-left">
+    <div className="relative isolate flex-1 flex flex-col justify-start pt-4 pb-8 sm:pt-8 sm:pb-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+      <div className="mb-6 sm:mb-8 text-left">
         {user ? (
           <div>
             <span className="text-xs font-bold text-primary uppercase tracking-widest">Dashboard</span>
-            <h1 className="text-3xl font-extrabold text-zinc-900 mt-1 tracking-tight">
+            <h1 className="text-3xl font-semibold text-zinc-900 mt-1 tracking-tight">
               Ciao, {user.name || user.email}
             </h1>
-            <p className="text-zinc-500 text-sm mt-1">
-              Ecco lo stato delle tue attività e gli ultimi eventi in programma.
-            </p>
           </div>
         ) : (
-          <div className="py-6">
+          <div className="py-2 sm:py-4">
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Ottagora Hub</span>
-            <h1 className="text-4xl font-extrabold text-zinc-900 mt-1 tracking-tight">Spazio Connesso.</h1>
+            <h1 className="text-4xl font-semibold text-zinc-900 mt-1 tracking-tight">Spazio Connesso.</h1>
             <p className="text-zinc-500 text-sm mt-2 max-w-xl">
               Prenota il tuo workspace flessibile, iscriviti a corsi professionali, partecipa a eventi esclusivi e scopri menù d&apos;autore.
             </p>
@@ -62,9 +55,9 @@ export default async function Home() {
       </div>
 
       {user && (
-        <div className="space-y-4 mb-10">
+        <div className="space-y-4 mb-8">
           <div className="flex justify-between items-center gap-4 mb-2">
-            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               In programma
             </h2>
             {activities.length > 0 && (
@@ -99,11 +92,11 @@ export default async function Home() {
                 const Icon = ACTIVITY_ICONS[activity.kind];
                 return (
                   <Card key={activity.id} padding="sm" className="flex items-start gap-4 min-w-0">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-zinc-800 truncate">{activity.title}</h3>
+                      <h3 className="text-sm font-semibold text-zinc-800 truncate">{activity.title}</h3>
                       <p className="text-xs text-zinc-500 mt-0.5 truncate">{activity.subtitle}</p>
                       <div className="flex gap-2 mt-2 text-[10px] text-zinc-400 font-medium">
                         <span className="inline-block first-letter:uppercase">
@@ -137,7 +130,7 @@ export default async function Home() {
 
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-4 mb-2">
-          <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
             Feed Eventi del Momento
           </h2>
           {events.length > 0 && (
@@ -177,7 +170,7 @@ export default async function Home() {
                     {event.cost === 0 ? "Gratuito" : `${event.cost.toFixed(2)}€`}
                   </Badge>
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 leading-snug">{event.name}</h3>
+                <h3 className="text-lg font-semibold text-zinc-900 leading-snug">{event.name}</h3>
                 <p className="text-xs text-zinc-500">{event.description}</p>
               </div>
 

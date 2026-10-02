@@ -16,8 +16,8 @@ export type CardProps = ComponentProps<"div"> & {
 const PADDING_CLASSES: Record<NonNullable<CardProps["padding"]>, string> = {
   none: "",
   sm: "p-4",
-  md: "p-6",
-  lg: "p-8",
+  md: "p-5 sm:p-6",
+  lg: "p-6 sm:p-8",
 };
 
 export function Card({
@@ -32,13 +32,13 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-3xl border shadow-sm transition-all",
+        "rounded-3xl border transition-all",
         PADDING_CLASSES[padding],
-        glass ? "glass bg-white/50" : "bg-white",
+        glass ? "glass bg-surface/50" : "bg-surface",
         selected
-          ? "border-primary/50 bg-primary/5 shadow-md ring-1 ring-primary/20"
+          ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
           : "border-zinc-200/40",
-        interactive && "cursor-pointer hover:bg-white hover:border-zinc-300/80",
+        interactive && "cursor-pointer hover:bg-surface hover:border-zinc-300/80",
         className
       )}
       {...props}

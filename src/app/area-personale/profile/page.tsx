@@ -19,9 +19,10 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-3xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12">
       <PageHeader
-        back={{ href: "/area-personale", label: "Area personale" }}
+        eyebrow="Area personale"
+        backHref="/area-personale"
         title="Il tuo profilo"
         description="Gestisci le tue informazioni anagrafiche, fiscali e preferenze alimentari."
       />

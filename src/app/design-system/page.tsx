@@ -19,6 +19,9 @@ import {
   IconNavProfile,
 } from "@/components/icons";
 import { DiagonalPattern, ChevronPattern } from "@/components/patterns";
+import MenuSheet from "@/components/MenuSheet";
+import { prisma } from "@/lib/prisma";
+import { menuDetailInclude, toMenuDetail } from "@/lib/menu-detail";
 
 const navIcons = [
   { name: "Dashboard", Icon: IconNavDashboard },
@@ -50,7 +53,7 @@ const icons = [
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{title}</h2>
+      <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">{title}</h2>
       {children}
     </section>
   );
@@ -60,7 +63,7 @@ function Swatch({ label, varName }: { label: string; varName: string }) {
   return (
     <div className="flex items-center gap-3">
       <div
-        className="h-12 w-12 rounded-xl border border-zinc-200/60 shadow-sm shrink-0"
+        className="h-12 w-12 rounded-xl border border-zinc-200/60 shrink-0"
         style={{ background: `var(${varName})` }}
       />
       <div>
@@ -71,14 +74,22 @@ function Swatch({ label, varName }: { label: string; varName: string }) {
   );
 }
 
-export default function DesignSystemPage() {
+export const revalidate = 0;
+
+export default async function DesignSystemPage() {
+  // Un menù reale dal database, per provare il pannello di dettaglio anche senza eventi futuri.
+  const sampleMenu = await prisma.menu.findFirst({
+    where: { foods: { some: {} } },
+    include: menuDetailInclude,
+  });
+
   return (
     <div className="mx-auto max-w-5xl w-full px-4 sm:px-6 lg:px-8 py-12 space-y-14">
       <div>
         <span className="text-xs font-bold text-primary uppercase tracking-widest">
           Pagina interna — non linkata in nav
         </span>
-        <h1 className="text-3xl font-extrabold text-zinc-900 mt-1 tracking-tight">
+        <h1 className="text-3xl font-semibold text-zinc-900 mt-1 tracking-tight">
           Design System Ottagora
         </h1>
         <p className="text-zinc-500 text-sm mt-1 max-w-2xl">
@@ -94,6 +105,11 @@ export default function DesignSystemPage() {
           <Swatch label="Primary (arancio)" varName="--primary" />
           <Swatch label="Ink (marrone)" varName="--ink" />
           <Swatch label="Accent (giallo)" varName="--accent" />
+          <Swatch label="Sfondo (giallo chiaro)" varName="--background" />
+          <Swatch label="Superficie card" varName="--surface" />
+          <Swatch label="Testo e titoli (cioccolato)" varName="--foreground" />
+          <Swatch label="Testo secondario" varName="--neutral-500" />
+          <Swatch label="Bordi" varName="--neutral-200" />
           <Swatch label="Success" varName="--success" />
           <Swatch label="Danger" varName="--danger" />
         </div>
@@ -204,6 +220,19 @@ export default function DesignSystemPage() {
         </div>
       </Section>
 
+      <Section title="Dettaglio menù (pannello dell'evento)">
+        {sampleMenu ? (
+          <Card className="flex items-center justify-between gap-4">
+            <span className="text-sm text-zinc-700">
+              Menù: <strong>{sampleMenu.name}</strong>
+            </span>
+            <MenuSheet menu={toMenuDetail(sampleMenu)} />
+          </Card>
+        ) : (
+          <p className="text-sm text-zinc-500">Nessun menù nel database.</p>
+        )}
+      </Section>
+
       <Section title="Empty state">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <EmptyState
@@ -232,7 +261,7 @@ export default function DesignSystemPage() {
       <Section title="Pattern (da Pattern.pdf del cliente)">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <div className="relative h-48 rounded-2xl overflow-hidden border border-zinc-200/60 shadow-sm">
+            <div className="relative h-48 rounded-2xl overflow-hidden border border-zinc-200/60">
               <DiagonalPattern className="absolute inset-0 h-full w-full" />
             </div>
             <p className="text-xs text-zinc-500 mt-2">
@@ -240,7 +269,7 @@ export default function DesignSystemPage() {
             </p>
           </div>
           <div>
-            <div className="relative h-48 rounded-2xl overflow-hidden border border-zinc-200/60 shadow-sm">
+            <div className="relative h-48 rounded-2xl overflow-hidden border border-zinc-200/60">
               <ChevronPattern className="absolute inset-0 h-full w-full" />
             </div>
             <p className="text-xs text-zinc-500 mt-2">

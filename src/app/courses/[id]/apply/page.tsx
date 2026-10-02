@@ -29,10 +29,11 @@ export default async function ApplyCoursePage({
   const direct = course.enrollmentMode === "DIRECT";
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className="mx-auto w-full max-w-xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12">
       <PageHeader
-        back={{ href: "/courses", label: "Torna ai corsi" }}
-        title={direct ? "Iscrizione al corso" : "Candidatura corso"}
+        eyebrow="Corsi"
+        backHref="/courses"
+        title={direct ? "Iscrizione" : "Candidatura"}
         description={
           direct ? (
             <>

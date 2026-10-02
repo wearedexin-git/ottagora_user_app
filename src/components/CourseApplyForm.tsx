@@ -61,7 +61,7 @@ export default function CourseApplyForm({
             accept=".pdf"
             required={requiresCv && anagraficaComplete}
             disabled={!anagraficaComplete || isPending}
-            className="w-full rounded-xl border border-zinc-200 bg-white p-2 text-sm text-zinc-600 shadow-sm file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-xs file:font-bold file:text-ink disabled:opacity-50"
+            className="w-full rounded-xl border border-zinc-200 bg-surface p-2 text-sm text-zinc-600 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-xs file:font-bold file:text-ink disabled:opacity-50"
           />
         </div>
       )}
@@ -74,7 +74,7 @@ export default function CourseApplyForm({
           name="message"
           rows={3}
           disabled={!anagraficaComplete || isPending}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm"
+          className="w-full rounded-xl border border-zinc-200 bg-surface px-4 py-3 text-sm"
         />
       </div>
 

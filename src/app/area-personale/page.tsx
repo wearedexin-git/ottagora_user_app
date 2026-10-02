@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { logoutAction } from "@/app/actions/auth-actions";
 import { isUserAnagraficaComplete } from "@/lib/user-anagrafica";
-import { IconLogOut, IconNavProfile } from "@/components/icons";
-import { Badge } from "@/components/ui";
+import { IconArrowRight, IconLogOut } from "@/components/icons";
+import { PageHeader } from "@/components/ui";
 import DashboardTabs, { AREA_TABS, buildAreaData, type AreaTab } from "@/components/DashboardTabs";
 
 export const revalidate = 0;
@@ -57,50 +57,21 @@ export default async function AreaPersonalePage({
     : (AREA_TABS.find((t) => data[t].upcoming.length > 0) ?? "tavoli");
 
   const fullName = [user.name, user.surname].filter(Boolean).join(" ");
-  const initials =
-    `${user.name?.[0] ?? ""}${user.surname?.[0] ?? ""}`.toUpperCase() || user.email[0].toUpperCase();
   const profileComplete = isUserAnagraficaComplete(user);
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-8 px-4 py-8 sm:px-6 sm:py-12">
-      <header className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-lg font-extrabold text-white">
-            {initials}
-          </div>
-          <div className="min-w-0">
-            <h1 className="truncate text-2xl font-extrabold tracking-tight text-zinc-900">
-              {fullName || "Il tuo account"}
-            </h1>
-            <p className="truncate text-sm text-zinc-500">{user.email}</p>
-          </div>
-        </div>
-
+    <div className="mx-auto w-full max-w-3xl space-y-6 px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12">
+      <PageHeader eyebrow="Area personale" title={fullName || "Il tuo account"} className="mb-0">
+        <p className="mt-1 truncate text-sm text-zinc-500">{user.email}</p>
+        {/* Il testo del link indica anche lo stato: "Completa" se mancano dati obbligatori. */}
         <Link
           href="/area-personale/profile"
-          className="flex items-center gap-3 rounded-2xl border border-zinc-200/70 bg-white px-4 py-3.5 shadow-sm transition-colors hover:border-zinc-300"
+          className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-primary hover:brightness-90"
         >
-          <IconNavProfile className="h-5 w-5 shrink-0 text-primary" />
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-bold text-zinc-900">Il tuo profilo</span>
-            <span className="block truncate text-xs text-zinc-500">
-              Profilo {user.userType === "COMPANY" ? "azienda" : "privato"} · dati anagrafici e preferenze
-            </span>
-          </span>
-          {profileComplete ? (
-            <Badge variant="success" className="shrink-0 px-2.5 py-0.5">
-              Completo
-            </Badge>
-          ) : (
-            <Badge variant="primary" className="shrink-0 px-2.5 py-0.5">
-              Da completare
-            </Badge>
-          )}
-          <span className="shrink-0 text-lg leading-none text-zinc-400" aria-hidden="true">
-            ›
-          </span>
+          {profileComplete ? "Modifica profilo" : "Completa il profilo"}
+          <IconArrowRight className="h-3.5 w-3.5" />
         </Link>
-      </header>
+      </PageHeader>
 
       <DashboardTabs activeTab={activeTab} data={data} />
 

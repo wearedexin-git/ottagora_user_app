@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Card, Button, Badge, EmptyState } from "@/components/ui";
+import { Card, Button, Badge, EmptyState, PageHeader } from "@/components/ui";
 import { IconNavCourses } from "@/components/icons";
 import CoursesFilters from "@/components/CoursesFilters";
 
@@ -68,15 +68,8 @@ export default async function CoursesPage({
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="border-b border-zinc-200/50 pb-6 mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl">
-          Corsi di Formazione
-        </h1>
-        <p className="mt-2 text-sm text-zinc-500">
-          Sviluppa nuove competenze professionali con i nostri docenti senior nelle aule dedicate.
-        </p>
-      </div>
+    <div className="mx-auto max-w-7xl px-4 pt-4 pb-8 sm:px-6 sm:pt-8 sm:pb-12 lg:px-8">
+      <PageHeader eyebrow="Corsi" title="Formazione" />
 
       {allCourses.length > 0 && (
         <CoursesFilters
@@ -160,7 +153,7 @@ export default async function CoursesPage({
                   </span>
                 </div>
 
-                <h2 className="mt-4 text-xl font-bold leading-tight text-zinc-900">
+                <h2 className="mt-4 text-xl font-semibold leading-tight text-zinc-900">
                   {course.title}
                 </h2>
                 {course.description && (
@@ -187,7 +180,7 @@ export default async function CoursesPage({
                         <ol className="mt-3 space-y-3">
                           {course.lessons.map((lesson) => (
                             <li key={lesson.id} className="flex gap-3 text-sm">
-                              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-bold text-primary">
                                 {lesson.lessonNumber}
                               </span>
                               <div className="min-w-0">

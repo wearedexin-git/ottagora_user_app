@@ -275,13 +275,8 @@ export default function DashboardTabs({
 
   return (
     <div className="space-y-6">
-      <nav
-        aria-label="Le tue attività"
-        className="grid grid-cols-3 gap-1 rounded-2xl border border-zinc-200/60 bg-white/60 p-1.5 shadow-sm"
-      >
+      <nav aria-label="Le tue attività" className="grid grid-cols-3 gap-2">
         {AREA_TABS.map((tab) => {
-          const { label, icon: Icon } = TAB_CONFIG[tab];
-          const count = data[tab].upcoming.length;
           const active = tab === activeTab;
           return (
             <Link
@@ -289,27 +284,14 @@ export default function DashboardTabs({
               href={`/area-personale?tab=${tab}`}
               scroll={false}
               aria-current={active ? "page" : undefined}
-              aria-label={count > 0 ? `${label}, ${count} in programma` : label}
               className={cn(
-                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-xs font-bold transition-all sm:flex-row sm:gap-2 sm:py-2.5 sm:text-sm",
+                "flex min-w-0 items-center justify-center rounded-lg px-2 py-2.5 text-sm font-bold transition-colors",
                 active
-                  ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200/70"
-                  : "text-zinc-500 hover:text-zinc-800"
+                  ? "bg-primary text-white"
+                  : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
               )}
             >
-              {/* Il conteggio sta sull'angolo dell'icona: così su mobile la tab non si allarga. */}
-              <span className="relative shrink-0">
-                <Icon className={cn("h-5 w-5", active ? "text-primary" : "text-zinc-400")} />
-                {count > 0 && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white"
-                  >
-                    {count}
-                  </span>
-                )}
-              </span>
-              <span className="truncate">{label}</span>
+              <span className="truncate">{TAB_CONFIG[tab].label}</span>
             </Link>
           );
         })}
@@ -317,7 +299,7 @@ export default function DashboardTabs({
 
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-base font-bold text-zinc-900">In programma</h2>
+          <h2 className="text-base font-semibold text-zinc-900">In programma</h2>
           {upcoming.length > 0 && (
             <Link
               href={config.action.href}
@@ -372,7 +354,7 @@ export default function DashboardTabs({
 
 function ActivityRow({ row, muted }: { row: Row; muted?: boolean }) {
   return (
-    <li className="rounded-2xl border border-zinc-200/70 bg-white p-4 shadow-sm">
+    <li className="rounded-2xl border border-zinc-200/70 bg-surface p-4">
       <div className="flex gap-4">
         <div
           className={cn(
